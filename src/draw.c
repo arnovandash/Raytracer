@@ -39,6 +39,8 @@ static void		*draw_chunk(void *q)
 	free(c->e);
 	free(c);
 	pthread_exit(0);
+	// TODO added return 0 to appease mingw32
+	return 0;
 }
 
 static void		p_join(t_env *e, SDL_Surface *img, t_make_chunks *m)

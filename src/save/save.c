@@ -14,9 +14,9 @@
 
 static void	save_camra(t_camera *cam, int fd)
 {
-	char	*temp;
+//	char	*temp;
 
-	temp = NULL;
+//	temp = NULL;
 	ft_putstr_fd("	CAMERA\n", fd);
 	ft_putstr_fd("\t\tLOC\t\t\t", fd);
 	write_coord(cam->loc, fd);
@@ -25,7 +25,8 @@ static void	save_camra(t_camera *cam, int fd)
 	ft_putstr_fd("\t\tUP\t\t\t", fd);
 	write_coord(cam->up, fd);
 	ft_putstr_fd("\t\tAPERTURE\t", fd);
-	dprintf(fd, "%lf\n", cam->a);
+// TODO dprintf implicit declaration mingw32
+//	dprintf(fd, "%lf\n", cam->a);
 }
 
 static void	save_render(t_env *e, int fd)

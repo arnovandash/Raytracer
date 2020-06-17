@@ -14,10 +14,14 @@
 # define RT_H
 
 # include "libft.h"
-# include "SDL.h"
+# include "SDL2/SDL.h"
 # include <errno.h>
 # include <float.h>
-# include <pthread.h>
+//# include <pthread.h>
+# include <pthreads4w/pthread.h>
+# include <math.h>
+# include <unistd.h>
+# include <stdio.h>
 
 # include "defines.h"
 # include "structs.h"
