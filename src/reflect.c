@@ -28,6 +28,8 @@ t_colour	reflect(t_env *e, int depth)
 	t_env		*reflect;
 	t_colour	colour;
 
+	atomic_fetch_add(&g_stats.rays, 1);
+	atomic_fetch_add(&g_stats.reflection_rays, 1);
 	colour = (t_colour){0.0, 0.0, 0.0, 0.0};
 	reflect = copy_env(e);
 	set_reflect_ray(e, reflect);

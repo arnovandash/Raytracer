@@ -14,6 +14,7 @@
 
 int			intersect_prim(t_env *e, t_ray *ray, size_t prim, double *t)
 {
+	atomic_fetch_add(&g_stats.intersection_tests, 1);
 	if (e->prim[prim]->type == PRIM_SPHERE)
 		return (intersect_sphere(ray, e->prim[prim], t));
 	if (e->prim[prim]->type == PRIM_HEMI_SPHERE)

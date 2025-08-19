@@ -28,6 +28,8 @@ int			in_shadow(t_env *e, t_light *light)
 {
 	t_in_shadow	var;
 
+	atomic_fetch_add(&g_stats.rays, 1);
+	atomic_fetch_add(&g_stats.shadow_rays, 1);
 	init(&var, e, light);
 	while (var.prim--)
 	{

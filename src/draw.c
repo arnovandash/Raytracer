@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "draw.h"
+#include <stdio.h>
 
 static void		*draw_chunk(void *q)
 {
@@ -26,6 +27,8 @@ static void		*draw_chunk(void *q)
 		px = &c->px[c->d.y * c->e->x + c->d.x];
 		while (c->x < c->stopx)
 		{
+			atomic_fetch_add(&g_stats.rays, 1);
+			atomic_fetch_add(&g_stats.primary_rays, 1);
 			c->e->p_hit = NULL;
 			get_ray_dir(c->e, (double)c->x, (double)c->d.y);
 			intersect_scene(c->e);
@@ -56,6 +59,7 @@ static void		make_chunks(t_env *e, SDL_Rect *d, SDL_Surface *img)
 	t_make_chunks	m;
 
 	m.tids = ceil((double)d->w / 64.0) * ceil((double)d->h / 64.0);
+	g_stats.threads = m.tids;
 	m.tid = (pthread_t *)malloc(sizeof(pthread_t) * m.tids);
 	m.thread = 0;
 	m.chunk_y = 0;
@@ -92,7 +96,7 @@ static void		render(t_env *e, SDL_Rect d)
 		SDL_BlitSurface(e->img, NULL, e->dof, NULL);
 		while (r.i++ != e->super)
 		{
-			ft_printf("Rendering frame %d of %d\n", r.i, e->super);
+			printf("Rendering frame %zu of %zu\n", r.i, e->super);
 			r.angle += r.angle_step;
 			e->camera.loc = vadd(r.cam_origin, (t_vector)
 				{cos(r.angle) * e->camera.a, 0.0, sin(r.angle) * e->camera.a});
@@ -121,8 +125,15 @@ void			draw(t_env *e, SDL_Rect d)
 		gettimeofday(&tv2, NULL);
 		sec = tv2.tv_sec * 1000000 - tv.tv_sec * 1000000;
 		sec += tv2.tv_usec - tv.tv_usec;
-		ft_printf("Frame drawn in %u.%u seconds\n", sec / 1000000,
-			sec - (sec / 1000000) * 1000000);
+		printf("Frame drawn in %zu.%06zu seconds\n", sec / 1000000,
+			sec % 1000000);
+		printf("Rendered using %zu threads\n", atomic_load(&g_stats.threads));
+		printf("Total rays: %zu\n", atomic_load(&g_stats.rays));
+		printf("Primary rays: %zu\n", atomic_load(&g_stats.primary_rays));
+		printf("Reflection rays: %zu\n", atomic_load(&g_stats.reflection_rays));
+		printf("Refraction rays: %zu\n", atomic_load(&g_stats.refraction_rays));
+		printf("Shadow rays: %zu\n", atomic_load(&g_stats.shadow_rays));
+		printf("Intersection tests: %zu\n", atomic_load(&g_stats.intersection_tests));
 	}
 	else
 		render(e, d);

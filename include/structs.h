@@ -116,6 +116,17 @@ typedef struct	s_light
 	double		half;
 }				t_light;
 
+typedef struct	s_stats
+{
+	_Atomic size_t	rays;
+	_Atomic size_t	primary_rays;
+	_Atomic size_t	reflection_rays;
+	_Atomic size_t	refraction_rays;
+	_Atomic size_t	shadow_rays;
+	_Atomic size_t	intersection_tests;
+	_Atomic size_t	threads;
+}				t_stats;
+
 /*
 ** ENVIRNMENT STRUCTURE
 */

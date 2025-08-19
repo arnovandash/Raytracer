@@ -18,9 +18,12 @@
 # include <errno.h>
 # include <float.h>
 # include <pthread.h>
+# include <stdatomic.h>
 
 # include "defines.h"
 # include "structs.h"
 # include "prototypes.h"
+
+extern t_stats	g_stats;
 
 #endif

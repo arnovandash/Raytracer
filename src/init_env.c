@@ -20,8 +20,20 @@ static void		init_camera(t_env *e)
 	e->camera.a = 0.1;
 }
 
+static void		init_stats(void)
+{
+	g_stats.rays = 0;
+	g_stats.primary_rays = 0;
+	g_stats.reflection_rays = 0;
+	g_stats.refraction_rays = 0;
+	g_stats.shadow_rays = 0;
+	g_stats.intersection_tests = 0;
+	g_stats.threads = 0;
+}
+
 static void		initials(t_env *e)
 {
+	init_stats();
 	e->s_num = 0;
 	e->prims = 0;
 	e->objects = 0;

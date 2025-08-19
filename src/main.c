@@ -12,10 +12,13 @@
 
 #include "rt.h"
 
+t_stats	g_stats;
+
 int		main(int ac, char **av)
 {
 	t_env	e;
 
+	ft_bzero(&g_stats, sizeof(t_stats));
 	if (ac != 2)
 		err(USAGE_ERROR, NULL, &e);
 	e.file_name = ft_strdup(av[1]);

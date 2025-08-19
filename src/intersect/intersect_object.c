@@ -20,6 +20,8 @@ int		intersect_object(t_env *e, t_object *o, double *t)
 	face = o->faces;
 	hit = 0;
 	while (face--)
+	{
+		atomic_fetch_add(&g_stats.intersection_tests, 1);
 		if (intersect_triangle(&e->ray, o->face[face], t) && *t < e->t)
 		{
 			e->t = *t;
@@ -28,5 +30,6 @@ int		intersect_object(t_env *e, t_object *o, double *t)
 			e->hit_type = FACE;
 			hit = 1;
 		}
+	}
 	return (hit);
 }

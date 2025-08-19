@@ -116,6 +116,8 @@ t_colour	refract(t_env *e, int depth, t_colour colour)
 {
 	t_env		*refract_env;
 
+	atomic_fetch_add(&g_stats.rays, 1);
+	atomic_fetch_add(&g_stats.refraction_rays, 1);
 	if (depth > e->maxdepth)
 		return (colour);
 	refract_env = copy_env(e);
