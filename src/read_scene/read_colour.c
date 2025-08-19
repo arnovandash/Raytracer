@@ -27,19 +27,19 @@ t_colour		get_colour(t_env *e, t_split_string values)
 	res = (t_colour){0.0, 0.0, 0.0, 1.0};
 	if (values.words == 1 || values.words == 2)
 	{
-		if (ft_strlen(values.strings[0]) != 6)
+		if (strlen(values.strings[0]) != 6)
 			err(FILE_FORMAT_ERROR, "Colour has invalid format", e);
-		temp = ft_strnew(3);
-		temp = ft_strncpy(temp, values.strings[0], 2);
-		res.r = ft_atoi_hex(temp) / 255.0;
-		temp = ft_strncpy(temp, values.strings[0] + 2, 2);
-		res.g = ft_atoi_hex(temp) / 255.0;
-		temp = ft_strncpy(temp, values.strings[0] + 4, 2);
-		res.b = ft_atoi_hex(temp) / 255.0;
-		ft_strdel(&temp);
+		temp = calloc(3, sizeof(char));
+		temp = strncpy(temp, values.strings[0], 2);
+		res.r = (int)strtol(temp, NULL, 16) / 255.0;
+		temp = strncpy(temp, values.strings[0] + 2, 2);
+		res.g = (int)strtol(temp, NULL, 16) / 255.0;
+		temp = strncpy(temp, values.strings[0] + 4, 2);
+		res.b = (int)strtol(temp, NULL, 16) / 255.0;
+		free(temp);
 	}
 	if (values.words == 2)
-		res.intensity = to_range(ft_atod(values.strings[1]), 0.0, 1.0);
+		res.intensity = to_range(atof(values.strings[1]), 0.0, 1.0);
 	if (values.words > 2)
 		err(FILE_FORMAT_ERROR, "Invalid colour", e);
 	return (res);

@@ -53,17 +53,17 @@ void		exit_rt(t_env *e, int code);
 ** src/read_scene
 */
 void		read_scene(char *file, t_env *e);
-void		get_primitive_attributes(t_env *e, int fd);
-void		get_object_attributes(t_env *e, int fd);
+void		get_primitive_attributes(t_env *e, FILE *stream);
+void		get_object_attributes(t_env *e, FILE *stream);
 size_t		get_material_number(t_env *e, char *str);
-void		get_camera_attributes(t_env *e, int fd);
-void		get_light_attributes(t_env *e, int fd);
+void		get_camera_attributes(t_env *e, FILE *stream);
+void		get_light_attributes(t_env *e, FILE *stream);
 t_colour	get_colour(t_env *e, t_split_string values);
 t_vector	get_vector(t_env *e, t_split_string values);
 t_vector	get_unit_vector(t_env *e, t_split_string values);
 void		get_tri(t_env *e, t_prim *o, t_split_string *values);
-void		get_material_attributes(t_env *e, int fd);
-void		read_obj(t_env *e, int fd);
+void		get_material_attributes(t_env *e, FILE *stream);
+void		read_obj(t_env *e, FILE *stream);
 void		init_material(t_material *m);
 
 /*

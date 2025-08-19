@@ -85,7 +85,7 @@ void			init_env(t_env *e)
 	e->dof = SDL_CreateRGBSurface(0, e->x, e->y, 32, 0, 0, 0, 0);
 	e->px = (uint32_t *)e->img->pixels;
 	e->dx = (uint32_t *)e->dof->pixels;
-	ft_bzero(e->px, (e->x * 4) * e->y);
-	ft_bzero(e->dx, (e->x * 4) * e->y);
+	memset(e->px, 0, (e->x * 4) * e->y);
+	memset(e->dx, 0, (e->x * 4) * e->y);
 	SDL_UpdateWindowSurface(e->win);
 }

@@ -23,30 +23,31 @@ static void		set_material_values(t_env *e, char *pt1, char *pt2)
 {
 	t_split_string	values;
 
-	values = ft_nstrsplit(pt2, ' ');
-	if (!ft_strcmp(pt1, "NAME"))
+	values = nstrsplit(pt2, ' ');
+	if (!strcmp(pt1, "NAME"))
 	{
-		ft_strdel(&e->material[e->materials]->name);
-		e->material[e->materials]->name = ft_strdup(values.strings[0]);
+		free(e->material[e->materials]->name);
+		e->material[e->materials]->name = NULL;
+		e->material[e->materials]->name = strdup(values.strings[0]);
 	}
-	else if (!ft_strcmp(pt1, "DIFFUSE"))
+	else if (!strcmp(pt1, "DIFFUSE"))
 		e->material[e->materials]->diff = get_colour(e, values);
-	else if (!ft_strcmp(pt1, "SPECULAR"))
+	else if (!strcmp(pt1, "SPECULAR"))
 		e->material[e->materials]->spec = get_colour(e, values);
-	else if (!ft_strcmp(pt1, "REFLECT"))
+	else if (!strcmp(pt1, "REFLECT"))
 		e->material[e->materials]->reflect =
-			to_range(ft_atod(values.strings[0]), 0.0, 1.0);
-	else if (!ft_strcmp(pt1, "REFRACT"))
+			to_range(atof(values.strings[0]), 0.0, 1.0);
+	else if (!strcmp(pt1, "REFRACT"))
 		e->material[e->materials]->refract =
-			to_range(ft_atod(values.strings[0]), 0.0, 1.0);
-	else if (!ft_strcmp(pt1, "IOR"))
-		e->material[e->materials]->ior = ft_atod(values.strings[0]);
-	ft_free_split(&values);
+			to_range(atof(values.strings[0]), 0.0, 1.0);
+	else if (!strcmp(pt1, "IOR"))
+		e->material[e->materials]->ior = atof(values.strings[0]);
+	free_split(&values);
 }
 
 void			init_material(t_material *m)
 {
-	m->name = ft_strdup("UNNAMED");
+	m->name = strdup("UNNAMED");
 	m->reflect = 0.0;
 	m->refract = 0.0;
 	m->ior = 1;
@@ -54,25 +55,25 @@ void			init_material(t_material *m)
 	m->spec = (t_colour){1.0, 1.0, 1.0, 0.5};
 }
 
-void			get_material_attributes(t_env *e, int fd)
+void	get_material_attributes(t_env *e, FILE *stream)
 {
 	t_split_string	attr;
-	char			*temp_line;
+	char			*line = NULL;
+	size_t			len = 0;
 
 	attr.words = 0;
 	e->material[e->materials] = (t_material *)malloc(sizeof(t_material));
 	init_material(e->material[e->materials]);
-	while (ft_gnl(fd, &temp_line))
+	while (getline(&line, &len, stream) != -1)
 	{
-		if (temp_line[0] == '\0')
+		if (line[0] == '\0' || line[0] == '\n')
 			break ;
-		attr = ft_nstrsplit(temp_line, '\t');
-		ft_strdel(&temp_line);
+		attr = nstrsplit(line, '\t');
 		if (attr.words < 2)
 			err(FILE_FORMAT_ERROR, "Material attributes", e);
 		set_material_values(e, attr.strings[0], attr.strings[1]);
-		ft_free_split(&attr);
+		free_split(&attr);
 	}
-	ft_strdel(&temp_line);
+	free(line);
 	++e->materials;
 }

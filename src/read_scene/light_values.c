@@ -16,16 +16,16 @@ static void	set_light_values(t_env *e, char *pt1, char *pt2)
 {
 	t_split_string	values;
 
-	values = ft_nstrsplit(pt2, ' ');
-	if (!ft_strcmp(pt1, "LOC"))
+	values = nstrsplit(pt2, ' ');
+	if (!strcmp(pt1, "LOC"))
 		e->light[e->lights]->loc = get_vector(e, values);
-	else if (!ft_strcmp(pt1, "COLOUR"))
+	else if (!strcmp(pt1, "COLOUR"))
 		e->light[e->lights]->colour = get_colour(e, values);
-	else if (!ft_strcmp(pt1, "INTENSITY"))
-		e->light[e->lights]->lm = ft_atod(values.strings[0]) * 3.415;
-	else if (!ft_strcmp(pt1, "HALF"))
-		e->light[e->lights]->half = ft_atod(values.strings[0]);
-	ft_free_split(&values);
+	else if (!strcmp(pt1, "INTENSITY"))
+		e->light[e->lights]->lm = atof(values.strings[0]) * 3.415;
+	else if (!strcmp(pt1, "HALF"))
+		e->light[e->lights]->half = atof(values.strings[0]);
+	free_split(&values);
 }
 
 static void	init_light(t_light *l)
@@ -36,25 +36,25 @@ static void	init_light(t_light *l)
 	l->half = 0.0;
 }
 
-void		get_light_attributes(t_env *e, int fd)
+void		get_light_attributes(t_env *e, FILE *stream)
 {
 	t_split_string	attr;
-	char			*temp_line;
+	char			*line = NULL;
+	size_t			len = 0;
 
 	attr.words = 0;
 	e->light[e->lights] = (t_light *)malloc(sizeof(t_light));
 	init_light(e->light[e->lights]);
-	while (ft_gnl(fd, &temp_line))
+	while (getline(&line, &len, stream) != -1)
 	{
-		if (temp_line[0] == '\0')
+		if (line[0] == '\0' || line[0] == '\n')
 			break ;
-		attr = ft_nstrsplit(temp_line, '\t');
-		ft_strdel(&temp_line);
+		attr = nstrsplit(line, '\t');
 		if (attr.words < 2)
-			err(FILE_FORMAT_ERROR, "Light arrtibutes", e);
+			err(FILE_FORMAT_ERROR, "Light attributes", e);
 		set_light_values(e, attr.strings[0], attr.strings[1]);
-		ft_free_split(&attr);
+		free_split(&attr);
 	}
-	ft_strdel(&temp_line);
+	free(line);
 	++e->lights;
 }

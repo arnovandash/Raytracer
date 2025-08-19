@@ -18,7 +18,8 @@ void	free_material(t_material **material, size_t num_mat)
 	{
 		while (num_mat--)
 		{
-			ft_strdel(&material[num_mat]->name);
+			free(material[num_mat]->name);
+			material[num_mat]->name = NULL;
 			if (material[num_mat])
 				free(material[num_mat]);
 			material[num_mat] = NULL;

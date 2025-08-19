@@ -34,12 +34,12 @@ static void	key_press_a(t_env *e)
 {
 	if (e->s_num)
 	{
-		ft_putstr("Deselecting all primitives\n");
+		fputs("Deselecting all primitives\n", stdout);
 		deselect_all(e);
 	}
 	else
 	{
-		ft_putstr("Selecting all primitives\n");
+		fputs("Selecting all primitives\n", stdout);
 		select_all(e);
 	}
 	draw(e, (SDL_Rect){0, 0, e->x, e->y});

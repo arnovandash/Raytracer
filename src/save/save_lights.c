@@ -20,7 +20,7 @@ static void	write_color_segment(int col, int fd)
 	{
 		temp = ft_itoa_base(col, 16);
 		ft_putstr_fd(temp, fd);
-		ft_strdel(&temp);
+		strdel(&temp);
 	}
 	else
 		ft_putstr_fd("00", fd);

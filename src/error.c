@@ -12,6 +12,23 @@
 
 #include "rt.h"
 
+char	*strjoin(char const *s1, char const *s2)
+{
+	char	*new;
+	size_t	len1;
+	size_t	len2;
+
+	len1 = strlen(s1);
+	len2 = strlen(s2);
+	new = (char *)malloc(len1 + len2 + 1);
+	if (new == NULL)
+		return (NULL);
+	memcpy(new, s1, len1);
+	memcpy(new + len1, s2, len2);
+	new[len1 + len2] = '\0';
+	return (new);
+}
+
 void	exit_rt(t_env *e, int code)
 {
 	if (code != USAGE_ERROR)
@@ -37,22 +54,22 @@ void	err(int error_no, char *function, t_env *e)
 {
 	char	*error;
 
-	ft_putstr("\e[1;91mERROR:\e[0m ");
+	fputs("\e[1;91mERROR:\e[0m ", stdout);
 	if (error_no == FILE_OPEN_ERROR)
-		error = ft_strjoin(function, ": File open error");
+		error = strjoin(function, ": File open error");
 	else if (error_no == MALLOC_ERROR)
-		error = ft_strjoin(function, ": Malloc error");
+		error = strjoin(function, ": Malloc error");
 	else if (error_no == FREE_ERROR)
-		error = ft_strjoin(function, ": Free error");
+		error = strjoin(function, ": Free error");
 	else if (error_no == FILE_FORMAT_ERROR)
-		error = ft_strjoin(function, ": Invalid file format");
+		error = strjoin(function, ": Invalid file format");
 	else if (error_no == USAGE_ERROR)
 		error = "Invalid Usage\n    ./RT [SCENE FILE]";
 	if (error_no > 15)
-		ft_putendl(error);
+		puts(error);
 	else
 		perror(error);
 	if (error_no < 32)
-		ft_strdel(&error);
+		strdel(&error);
 	exit_rt(e, error_no);
 }

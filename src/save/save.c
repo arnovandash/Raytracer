@@ -15,10 +15,11 @@
 static void	save_camra(t_camera *cam, int fd)
 {
 
-	ft_putstr_fd("	CAMERA\n", fd);
-	ft_putstr_fd("\t\tLOC\t\t\t", fd);
+	dprintf(fd, "	CAMERA
+");
+	dprintf(fd, "\t\tLOC\t\t\t");
 	write_coord(cam->loc, fd);
-	ft_putstr_fd("\t\tDIR\t\t\t", fd);
+	dprintf(fd, "\t\tDIR\t\t\t");
 	write_coord(cam->dir, fd);
 	ft_putstr_fd("\t\tUP\t\t\t", fd);
 	write_coord(cam->up, fd);
@@ -58,7 +59,7 @@ void		save(t_env *e)
 	if ((fd = open(e->file_name, O_WRONLY | O_TRUNC)) == -1)
 		err(FILE_OPEN_ERROR, "Could not save the file", e);
 	ft_putstr_fd("# SCENE RT\n", fd);
-	ft_putstr_fd("	MAXDEPTH	", fd);
+	ft_putstr_fd(" 	MAXDEPTH\t", fd);
 	temp = ft_itoa(e->maxdepth);
 	ft_putendl_fd(temp, fd);
 	ft_strdel(&temp);

@@ -13,12 +13,27 @@
 #ifndef RT_H
 # define RT_H
 
-# include "libft.h"
+#include <stddef.h>
+
+typedef struct	s_split_string
+{
+	char	**strings;
+	size_t	words;
+}				t_split_string;
+
+#define strdel(s) do { free(s); s = NULL; } while (0)
+
+t_split_string	nstrsplit(char const *s, char c);
+void			free_split(t_split_string *split);
+char			*strtrim(char const *s);
 # include "SDL.h"
 # include <errno.h>
 # include <float.h>
 # include <pthread.h>
 # include <stdatomic.h>
+# include <string.h>
+# include <stdlib.h>
+# include <ctype.h>
 
 # include "defines.h"
 # include "structs.h"
