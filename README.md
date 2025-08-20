@@ -10,19 +10,16 @@ This project was a collaborative effort. The majority of the original code was w
 
 *   Renders scenes from custom scene files.
 *   Can render OBJ files as objects in the scene.
+*   Reflections & refraction.
 *   Supports multiple light sources.
 *   Different coloured lights.
-*   Glossy and transparent materials.
-*   Object colours.
-*   Light intensity falloff.
+*   Different materials types.
 
 ## Screenshots
 
 ![Screenshot 1](./images/01.png)
-_A scene with reflective and refractive spheres._
 
 ![Screenshot 2](./images/02.png)
-_A scene showcasing object and light variations._
 
 ## Scene File Format
 
