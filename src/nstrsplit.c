@@ -40,17 +40,18 @@ static char		*strsub(char const *s, unsigned int start, size_t len)
 static int		count_words(const char *s, char c)
 {
 	size_t	words;
-	size_t	i;
 
 	words = 0;
-	i = 0;
-	while (s[i])
+	while (*s)
 	{
-		while (s[i] && s[i] != c)
-			i++;
-		while (s[i] && s[i] == c)
-			i++;
-		words++;
+		while (*s && *s == c)
+			s++;
+		if (*s)
+		{
+			words++;
+			while (*s && *s != c)
+				s++;
+		}
 	}
 	return (words);
 }

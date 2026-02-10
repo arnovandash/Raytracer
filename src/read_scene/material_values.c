@@ -66,7 +66,8 @@ void	get_material_attributes(t_env *e, FILE *stream)
 	init_material(e->material[e->materials]);
 	while (getline(&line, &len, stream) != -1)
 	{
-		if (line[0] == '\0' || line[0] == '\n')
+		line[strcspn(line, "\n")] = '\0';
+		if (line[0] == '\0')
 			break ;
 		attr = nstrsplit(line, '\t');
 		if (attr.words < 2)

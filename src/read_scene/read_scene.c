@@ -62,6 +62,7 @@ static void	get_quantities(t_env *e, FILE *stream)
 	num = 1;
 	while (getline(&line, &len, stream) != -1 && ++num)
 	{
+		line[strcspn(line, "\n")] = '\0';
 		if (line[strlen(line) - 1] == '\t')
 			err(FILE_FORMAT_ERROR, "Line ends in a tab", e);
 		char *trimmed_line = strtrim(line);
@@ -105,17 +106,24 @@ void		read_scene(char *file, t_env *e)
 	stream = fopen(file, "r");
 	if (stream == NULL)
 		err(FILE_OPEN_ERROR, "Scene file", e);
-	if (getline(&line, &len, stream) == -1 || (strcmp(line, "# SCENE RT\n")))
+	if (getline(&line, &len, stream) == -1)
+		err(FILE_FORMAT_ERROR, "Scene file must start with '# SCENE RT'", e);
+	line[strcspn(line, "\n")] = '\0';
+	if (strcmp(line, "# SCENE RT"))
 		err(FILE_FORMAT_ERROR, "Scene file must start with '# SCENE RT'", e);
 	init_read_scene(e, stream);
 	while (getline(&line, &len, stream) != -1)
 	{
-		if (line[0] == '\0' || line[0] == '\n')
+		line[strcspn(line, "\n")] = '\0';
+		if (line[0] == '\0')
 			break ;
 		scene_attributes(e, line);
 	}
 	while (getline(&line, &len, stream) != -1)
+	{
+		line[strcspn(line, "\n")] = '\0';
 		call_type(e, stream, &line);
+	}
 	free(line);
 	fclose(stream);
 }

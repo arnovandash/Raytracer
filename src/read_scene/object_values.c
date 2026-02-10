@@ -74,25 +74,26 @@ static void		init_object(t_object *o)
 	o->vnormals = 0;
 }
 
-void			get_object_attributes(t_env *e, int fd)
+void			get_object_attributes(t_env *e, FILE *stream)
 {
 	t_split_string	attr;
-	char			*temp_line;
+	char			*line = NULL;
+	size_t			len = 0;
 
 	attr.words = 0;
 	e->object[e->objects] = (t_object *)malloc(sizeof(t_object));
 	init_object(e->object[e->objects]);
-	while (ft_gnl(fd, &temp_line))
+	while (getline(&line, &len, stream) != -1)
 	{
-		if (temp_line[0] == '\0')
+		line[strcspn(line, "\n")] = '\0';
+		if (line[0] == '\0')
 			break ;
-		attr = ft_nstrsplit(temp_line, '\t');
+		attr = nstrsplit(line, '\t');
 		if (attr.words < 2)
-			err(FILE_FORMAT_ERROR, temp_line, e);
-		ft_strdel(&temp_line);
+			err(FILE_FORMAT_ERROR, "Object attributes", e);
 		set_object_values(e, attr.strings[0], attr.strings[1]);
-		ft_free_split(&attr);
+		free_split(&attr);
 	}
-	ft_strdel(&temp_line);
+	free(line);
 	++e->objects;
 }
