@@ -74,7 +74,7 @@ static void	set_refract_ray_object(t_env *e, t_env *refract)
 	n = get_normal(e, refract->ray.loc);
 	if (refract->flags & RAY_INSIDE)
 	{
-		n = vunit(vsub((t_vector){0.0, 0.0, 0.0}, n));
+		n = vunit(vneg(n));
 		if (refract_obj(e, refract, n))
 			refract->flags &= ~RAY_INSIDE;
 		else
@@ -97,7 +97,7 @@ static void	set_refract_ray_prim(t_env *e, t_env *refract)
 	n = get_normal(e, refract->ray.loc);
 	if (refract->flags & RAY_INSIDE)
 	{
-		n = vunit(vsub((t_vector){0.0, 0.0, 0.0}, n));
+		n = vunit(vneg(n));
 		if (refract_prim(e, refract, n))
 			refract->flags &= ~RAY_INSIDE;
 		else

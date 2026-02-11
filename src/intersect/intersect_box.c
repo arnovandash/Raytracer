@@ -33,7 +33,7 @@ int				intersect_box(t_ray *r, t_vector box[2])
 		b.max.x = b.max.y;
 	b.min.z = (box[b.sign[2]].z - r->loc.z) * b.inv_dir.z;
 	b.max.z = (box[1 - b.sign[2]].z - r->loc.z) * b.inv_dir.z;
-	if (b.min.x > b.max.x || b.min.x > b.max.x)
+	if (b.min.x > b.max.z || b.min.z > b.max.x)
 		return (0);
 	return (1);
 }

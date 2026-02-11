@@ -1,0 +1,133 @@
+# SCENE RT
+	MAXDEPTH	10
+	RENDER		1280 720
+	SUPER		16
+
+	CAMERA
+		LOC			0 -12 3
+		DIR			0 0 0.5
+		UP			0 0 1
+
+	LIGHT
+		LOC			-6 -6 8
+		COLOUR		FF5533
+		INTENSITY	1.0
+		HALF		50
+
+	LIGHT
+		LOC			5 -3 7
+		COLOUR		3355FF
+		INTENSITY	1.0
+		HALF		50
+
+	LIGHT
+		LOC			0 5 10
+		COLOUR		55FF55
+		INTENSITY	0.6
+		HALF		70
+
+	LIGHT
+		LOC			0 -2 1
+		COLOUR		FFFFFF
+		INTENSITY	0.4
+		HALF		25
+
+	MATERIAL
+		NAME		diamond_mat
+		DIFFUSE		F0F4FF 1.0
+		SPECULAR	FFFFFF 1.0
+		REFLECT		0.25
+		REFRACT		0.75
+		IOR			2.42
+
+	MATERIAL
+		NAME		glass
+		DIFFUSE		DDEEFF 1.0
+		SPECULAR	FFFFFF 0.8
+		REFLECT		0.10
+		REFRACT		0.90
+		IOR			1.52
+
+	MATERIAL
+		NAME		chrome_monkey
+		DIFFUSE		BBBBCC 1.0
+		SPECULAR	FFFFFF 1.0
+		REFLECT		0.5
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		mirror
+		DIFFUSE		999999 1.0
+		SPECULAR	FFFFFF 0.4
+		REFLECT		0.5
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		dark_floor
+		DIFFUSE		555566 1.0
+		SPECULAR	FFFFFF 0.3
+		REFLECT		0.25
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		red_wall
+		DIFFUSE		BB2222 1.0
+		SPECULAR	FFFFFF 0.2
+		REFLECT		0.1
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		blue_wall
+		DIFFUSE		2233AA 1.0
+		SPECULAR	FFFFFF 0.2
+		REFLECT		0.1
+		REFRACT		0.0
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 0 0
+		NORMAL		0 0 1
+		MATERIAL	dark_floor
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 10 0
+		NORMAL		0 -1 0
+		MATERIAL	mirror
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			-8 0 0
+		NORMAL		1 0 0
+		MATERIAL	red_wall
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			8 0 0
+		NORMAL		-1 0 0
+		MATERIAL	blue_wall
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			4 3 1.5
+		RADIUS		1.5
+		MATERIAL	glass
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			-4 4 1.2
+		RADIUS		1.2
+		MATERIAL	diamond_mat
+
+	OBJECT
+		FILE	./scenes/objects/suzanne.obj
+		MATERIAL	chrome_monkey
+
+	OBJECT
+		FILE	./scenes/objects/diamond.obj
+		MATERIAL	diamond_mat
+
+	OBJECT
+		FILE	./scenes/objects/glass_pane.obj
+		MATERIAL	glass
+

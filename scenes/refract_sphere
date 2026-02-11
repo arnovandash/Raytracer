@@ -98,9 +98,9 @@
 		MATERIAL	glass
 
 	OBJECT
-		FILE	./scenes/check01.obj
+		FILE	./scenes/objects/check01.obj
 		MATERIAL	green
 
 	OBJECT
-		FILE	./scenes/check02.obj
+		FILE	./scenes/objects/check02.obj
 		MATERIAL	blue

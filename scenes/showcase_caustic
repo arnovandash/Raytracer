@@ -1,0 +1,82 @@
+# SCENE RT
+	MAXDEPTH	10
+	RENDER		1280 720
+
+	CAMERA
+		LOC			0 -10 2.5
+		DIR			0 0 0
+		UP			0 0 1
+
+	LIGHT
+		LOC			0 0 8
+		COLOUR		FFFFFF
+		INTENSITY	1.2
+		HALF		40
+
+	LIGHT
+		LOC			-4 -4 5
+		COLOUR		FFAA44
+		INTENSITY	0.5
+		HALF		50
+
+	MATERIAL
+		NAME		glass
+		DIFFUSE		E8F8FF 1.0
+		SPECULAR	FFFFFF 0.9
+		REFLECT		0.08
+		REFRACT		0.92
+		IOR			1.52
+
+	MATERIAL
+		NAME		green
+		DIFFUSE		00FF00 1.0
+		SPECULAR	FFFFFF 0.5
+		REFLECT		0.0
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		blue
+		DIFFUSE		0000FF 1.0
+		SPECULAR	FFFFFF 0.5
+		REFLECT		0.0
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		floor
+		DIFFUSE		888888 1.0
+		SPECULAR	FFFFFF 0.2
+		REFLECT		0.05
+		REFRACT		0.0
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 0 -5
+		NORMAL		0 0 1
+		MATERIAL	floor
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 0 12
+		NORMAL		0 0 -1
+		MATERIAL	floor
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 15 0
+		NORMAL		0 -1 0
+		MATERIAL	floor
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			0 0 1.5
+		RADIUS		1.5
+		MATERIAL	glass
+
+	OBJECT
+		FILE	./scenes/objects/check01.obj
+		MATERIAL	green
+
+	OBJECT
+		FILE	./scenes/objects/check02.obj
+		MATERIAL	blue
+

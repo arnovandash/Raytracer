@@ -1,0 +1,138 @@
+# SCENE RT
+	MAXDEPTH	12
+	RENDER		1280 720
+	SUPER		16
+
+	CAMERA
+		LOC			0 -10 3
+		DIR			0 0 1
+		UP			0 0 1
+
+	LIGHT
+		LOC			-4 -4 6
+		COLOUR		FF4422
+		INTENSITY	1.0
+		HALF		35
+
+	LIGHT
+		LOC			4 -2 5
+		COLOUR		2244FF
+		INTENSITY	1.0
+		HALF		35
+
+	LIGHT
+		LOC			0 4 7
+		COLOUR		22FF44
+		INTENSITY	0.7
+		HALF		50
+
+	MATERIAL
+		NAME		diamond_mat
+		DIFFUSE		F0F8FF 1.0
+		SPECULAR	FFFFFF 1.0
+		REFLECT		0.25
+		REFRACT		0.75
+		IOR			2.42
+
+	MATERIAL
+		NAME		glass
+		DIFFUSE		CCDDFF 1.0
+		SPECULAR	FFFFFF 0.8
+		REFLECT		0.08
+		REFRACT		0.92
+		IOR			1.52
+
+	MATERIAL
+		NAME		mirror
+		DIFFUSE		AAAAAA 1.0
+		SPECULAR	FFFFFF 0.5
+		REFLECT		0.6
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		dark_mirror
+		DIFFUSE		444455 1.0
+		SPECULAR	FFFFFF 0.3
+		REFLECT		0.35
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		red_mat
+		DIFFUSE		DD2222 1.0
+		SPECULAR	FFFFFF 0.6
+		REFLECT		0.2
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		gold
+		DIFFUSE		FFD700 1.0
+		SPECULAR	FFFFFF 0.9
+		REFLECT		0.4
+		REFRACT		0.0
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 0 0
+		NORMAL		0 0 1
+		MATERIAL	dark_mirror
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 0 8
+		NORMAL		0 0 -1
+		MATERIAL	mirror
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 8 0
+		NORMAL		0 -1 0
+		MATERIAL	mirror
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			6 0 0
+		NORMAL		-1 0 0
+		MATERIAL	mirror
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			-6 0 0
+		NORMAL		1 0 0
+		MATERIAL	mirror
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			-3.5 3 1.5
+		RADIUS		1.5
+		MATERIAL	glass
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			3.5 2.5 1.2
+		RADIUS		1.2
+		MATERIAL	red_mat
+
+	PRIMITIVE
+		TYPE		cone
+		LOC			-3 -1 0
+		DIR			0 0 1
+		ANGLE		12
+		LIMIT		3
+		MATERIAL	gold
+
+	PRIMITIVE
+		TYPE		cone
+		LOC			3 -1 0
+		DIR			0 0 1
+		ANGLE		12
+		LIMIT		3
+		MATERIAL	gold
+
+	OBJECT
+		FILE	./scenes/objects/diamond.obj
+		MATERIAL	diamond_mat
+
+	OBJECT
+		FILE	./scenes/objects/glass_pane.obj
+		MATERIAL	glass
+

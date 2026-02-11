@@ -1,7 +1,7 @@
 # SCENE RT
 	MAXDEPTH	10
 	RENDER		1280 720
-	SUPER		19
+	SUPER		16
 
 	CAMERA
 		LOC			0.000000 -10.000000 2.500000
@@ -92,13 +92,13 @@ MATERIAL
 		MATERIAL	red
 
 	OBJECT
-		FILE	./scenes/check01.obj
+		FILE	./scenes/objects/check01.obj
 		MATERIAL	green
 
 	OBJECT
-		FILE	./scenes/check02.obj
+		FILE	./scenes/objects/check02.obj
 		MATERIAL	blue
 
 	OBJECT
-		FILE	./scenes/glass_pane.obj
+		FILE	./scenes/objects/glass_pane.obj
 		MATERIAL	glass

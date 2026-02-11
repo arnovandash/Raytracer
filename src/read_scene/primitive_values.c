@@ -65,7 +65,11 @@ static void		set_primitive_values(t_env *e, char *pt1, char *pt2)
 	else if (!strcmp(pt1, "RADIUS"))
 		e->prim[e->prims]->radius = atof(values.strings[0]);
 	else if (!strcmp(pt1, "ANGLE"))
+	{
 		e->prim[e->prims]->angle = atof(values.strings[0]) * M_PI / 180;
+		e->prim[e->prims]->cos_angle = cos(e->prim[e->prims]->angle);
+		e->prim[e->prims]->sin_angle = sin(e->prim[e->prims]->angle);
+	}
 	else if (!strcmp(pt1, "MATERIAL"))
 		e->prim[e->prims]->material = get_material_number(e, values.strings[0]);
 	else if (!strcmp(pt1, "LIMIT"))
@@ -82,6 +86,8 @@ static void		init_primitive(t_prim *p)
 	p->normal = (t_vector){0.0, 0.0, 1.0};
 	p->radius = 1.0;
 	p->angle = 0.523599;
+	p->cos_angle = cos(p->angle);
+	p->sin_angle = sin(p->angle);
 	p->material = 0;
 	p->s_bool = 0;
 	p->limit = -1;

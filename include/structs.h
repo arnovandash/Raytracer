@@ -80,6 +80,8 @@ typedef struct	s_prim
 	size_t		material;
 	double		radius;
 	double		angle;
+	double		cos_angle;
+	double		sin_angle;
 	double		limit;
 }				t_prim;
 

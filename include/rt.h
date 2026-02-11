@@ -40,6 +40,7 @@ char			*strtrim(char const *s);
 
 # include "defines.h"
 # include "structs.h"
+# include "vec_math.h"
 # include "prototypes.h"
 
 extern t_stats			g_stats;
