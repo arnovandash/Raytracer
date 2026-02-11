@@ -15,8 +15,8 @@ SDL2I		=	$(shell sdl2-config --cflags)
 SDL2L		=	$(shell sdl2-config --libs)
 INC			=	-I include $(SDL2I)
 LIBS		=	-lm $(SDL2L)
-CFLAGS		=	-Wall -Wextra -Werror -Wno-unused-result -O3 -pthread -std=c11 $(INC)
-LFLAGS		=	-lpthread $(INC) $(LIBS)
+CFLAGS		=	-Wall -Wextra -Werror -Wno-unused-result -O3 -flto -pthread -std=c11 $(INC)
+LFLAGS		=	-flto -lpthread $(INC) $(LIBS)
 CC			=	gcc
 LD			=	gcc
 

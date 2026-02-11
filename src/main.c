@@ -12,7 +12,8 @@
 
 #include "rt.h"
 
-t_stats	g_stats;
+t_stats					g_stats;
+_Thread_local t_thread_stats	g_tls_stats;
 
 int		main(int ac, char **av)
 {

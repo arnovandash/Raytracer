@@ -38,7 +38,7 @@ void		save(t_env *e)
 	if ((fd = open(e->file_name, O_WRONLY | O_TRUNC)) == -1)
 		err(FILE_OPEN_ERROR, "Could not save the file", e);
 	dprintf(fd, "# SCENE RT\n");
-	dprintf(fd, " \tMAXDEPTH\t%d\n", e->maxdepth);
+	dprintf(fd, "\tMAXDEPTH\t%d\n", e->maxdepth);
 	save_render(e, fd);
 	dprintf(fd, "\n");
 	save_camra(&e->camera, fd);

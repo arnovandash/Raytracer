@@ -27,8 +27,8 @@ static void		*draw_chunk(void *q)
 		px = &c->px[c->d.y * c->e->x + c->d.x];
 		while (c->x < c->stopx)
 		{
-			atomic_fetch_add(&g_stats.rays, 1);
-			atomic_fetch_add(&g_stats.primary_rays, 1);
+			++g_tls_stats.rays;
+			++g_tls_stats.primary_rays;
 			c->e->p_hit = NULL;
 			get_ray_dir(c->e, (double)c->x, (double)c->d.y);
 			intersect_scene(c->e);
@@ -39,6 +39,13 @@ static void		*draw_chunk(void *q)
 		}
 		++c->d.y;
 	}
+	atomic_fetch_add(&g_stats.rays, g_tls_stats.rays);
+	atomic_fetch_add(&g_stats.primary_rays, g_tls_stats.primary_rays);
+	atomic_fetch_add(&g_stats.reflection_rays, g_tls_stats.reflection_rays);
+	atomic_fetch_add(&g_stats.refraction_rays, g_tls_stats.refraction_rays);
+	atomic_fetch_add(&g_stats.shadow_rays, g_tls_stats.shadow_rays);
+	atomic_fetch_add(&g_stats.intersection_tests, g_tls_stats.intersection_tests);
+	memset(&g_tls_stats, 0, sizeof(t_thread_stats));
 	free(c->e);
 	free(c);
 	pthread_exit(0);

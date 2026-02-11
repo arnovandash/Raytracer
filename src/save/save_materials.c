@@ -14,7 +14,7 @@
 
 static void	write_colour(t_colour *col, int fd)
 {
-	dprintf(fd, "%02x%02x%02x %f\n",
+	dprintf(fd, "%02X%02X%02X %f\n",
 		(int)(col->r * 255.0),
 		(int)(col->g * 255.0),
 		(int)(col->b * 255.0),

@@ -42,6 +42,7 @@ char			*strtrim(char const *s);
 # include "structs.h"
 # include "prototypes.h"
 
-extern t_stats	g_stats;
+extern t_stats			g_stats;
+extern _Thread_local	t_thread_stats	g_tls_stats;
 
 #endif
