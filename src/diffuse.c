@@ -15,12 +15,14 @@
 static void		diffuse_colour(t_env *e, t_diffuse *d)
 {
 	t_vector	temp_colour;
+	double		shadow;
 
-	if (!in_shadow(e, d->light))
+	shadow = in_shadow(e, d->light);
+	if (shadow < 1.0)
 	{
 		d->l = vsub(d->light->loc, d->p);
 		d->dist = vnormalize(d->l);
-		d->l = vunit(d->l);
+		d->l = vdiv(d->l, d->dist);
 		d->v = vunit(vsub(e->ray.loc, d->p));
 		d->h = vunit(vadd(d->v, d->l));
 		d->intensity = d->light->lm *
@@ -29,8 +31,9 @@ static void		diffuse_colour(t_env *e, t_diffuse *d)
 			d->mat->diff.intensity), d->intensity * MAX(0, vdot(d->n, d->l)));
 		d->ls = vmult(vmult(colour_to_vector(d->mat->spec),
 			d->mat->spec.intensity), d->intensity *
-			pow(MAX(0, vdot(d->n, d->h)), 50.0));
+			ipow50(MAX(0, vdot(d->n, d->h))));
 		temp_colour = vadd(d->ld, d->ls);
+		temp_colour = vmult(temp_colour, 1.0 - shadow);
 		temp_colour = (t_vector){
 			temp_colour.x * d->light->colour.r,
 			temp_colour.y * d->light->colour.g,

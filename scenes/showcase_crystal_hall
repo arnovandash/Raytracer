@@ -1,0 +1,164 @@
+# SCENE RT
+	MAXDEPTH	12
+	RENDER		1280 720
+
+	CAMERA
+		LOC			0 -20 2
+		DIR			0 0 0
+		UP			0 0 1
+
+	LIGHT
+		LOC			-3 -8 5
+		COLOUR		FF4444
+		INTENSITY	0.9
+		HALF		40
+
+	LIGHT
+		LOC			3 -4 5
+		COLOUR		4444FF
+		INTENSITY	0.9
+		HALF		40
+
+	LIGHT
+		LOC			0 6 6
+		COLOUR		44FF44
+		INTENSITY	0.7
+		HALF		50
+
+	LIGHT
+		LOC			0 -2 -1
+		COLOUR		FFFFFF
+		INTENSITY	0.4
+		HALF		30
+
+	MATERIAL
+		NAME		mirror
+		DIFFUSE		AAAAAA 1.0
+		SPECULAR	FFFFFF 0.5
+		REFLECT		0.7
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		dark_mirror
+		DIFFUSE		444455 1.0
+		SPECULAR	FFFFFF 0.3
+		REFLECT		0.5
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		glass
+		DIFFUSE		EEFFFF 1.0
+		SPECULAR	FFFFFF 0.8
+		REFLECT		0.08
+		REFRACT		0.92
+		IOR			1.52
+
+	MATERIAL
+		NAME		ruby
+		DIFFUSE		FF2255 1.0
+		SPECULAR	FFFFFF 0.9
+		REFLECT		0.15
+		REFRACT		0.85
+		IOR			1.77
+
+	MATERIAL
+		NAME		emerald
+		DIFFUSE		22FF66 1.0
+		SPECULAR	FFFFFF 0.7
+		REFLECT		0.12
+		REFRACT		0.88
+		IOR			1.58
+
+	MATERIAL
+		NAME		diamond
+		DIFFUSE		F4F8FF 1.0
+		SPECULAR	FFFFFF 1.0
+		REFLECT		0.3
+		REFRACT		0.7
+		IOR			2.42
+
+	MATERIAL
+		NAME		gold_solid
+		DIFFUSE		FFD700 1.0
+		SPECULAR	FFFFFF 0.9
+		REFLECT		0.5
+		REFRACT		0.0
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 0 -3
+		NORMAL		0 0 1
+		MATERIAL	dark_mirror
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 0 8
+		NORMAL		0 0 -1
+		MATERIAL	mirror
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 10 0
+		NORMAL		0 -1 0
+		MATERIAL	mirror
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			7 0 0
+		NORMAL		-1 0 0
+		MATERIAL	mirror
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			-7 0 0
+		NORMAL		1 0 0
+		MATERIAL	mirror
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			0 0 0
+		RADIUS		2.5
+		MATERIAL	diamond
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			-4 3 -1
+		RADIUS		1.8
+		MATERIAL	ruby
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			4 2 -1
+		RADIUS		1.8
+		MATERIAL	emerald
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			0 5 -1.5
+		RADIUS		1.2
+		MATERIAL	glass
+
+	PRIMITIVE
+		TYPE		cone
+		LOC			-3 -2 -3
+		DIR			0 0 1
+		ANGLE		12
+		LIMIT		4
+		MATERIAL	gold_solid
+
+	PRIMITIVE
+		TYPE		cone
+		LOC			3 -2 -3
+		DIR			0 0 1
+		ANGLE		12
+		LIMIT		4
+		MATERIAL	gold_solid
+
+	PRIMITIVE
+		TYPE		cylinder
+		LOC			0 7 -3
+		DIR			0 0 1
+		RADIUS		0.8
+		LIMIT		2.5
+		MATERIAL	glass
+

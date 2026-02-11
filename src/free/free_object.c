@@ -19,7 +19,8 @@ void	free_object(t_object **obj, size_t num_obj)
 		while (num_obj--)
 			if (obj[num_obj])
 			{
-				ft_strdel(&obj[num_obj]->name);
+				free(obj[num_obj]->name);
+			obj[num_obj]->name = NULL;
 				free_obj_vert((void**)(obj[num_obj]->face),
 						obj[num_obj]->faces);
 				free_obj_vert((void**)(obj[num_obj]->v),

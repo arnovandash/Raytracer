@@ -14,25 +14,6 @@
 # define PROTOTYPES_H
 
 /*
-** src/vector_maths
-*/
-double		vdot(t_vector v1, t_vector v2);
-double		vnormalize(t_vector v);
-t_vector	vmult(t_vector v, double s);
-t_vector	vdiv(t_vector v, double d);
-t_vector	vadd(t_vector v1, t_vector v2);
-t_vector	vsub(t_vector v1, t_vector v2);
-t_vector	vcross(t_vector v1, t_vector v2);
-t_vector	vunit(t_vector v);
-t_vector	vproject(t_vector a, t_vector b);
-t_vector	colour_to_vector(t_colour colour);
-int			vcomp(t_vector v1, t_vector v2);
-t_vector	vrotx(t_vector v, double angle);
-t_vector	vroty(t_vector v, double angle);
-t_vector	vrotz(t_vector v, double angle);
-t_vector	vrot(t_vector v, double angle);
-
-/*
 ** src/loop.c
 */
 void		event_loop(t_env *e);
@@ -53,17 +34,17 @@ void		exit_rt(t_env *e, int code);
 ** src/read_scene
 */
 void		read_scene(char *file, t_env *e);
-void		get_primitive_attributes(t_env *e, int fd);
-void		get_object_attributes(t_env *e, int fd);
+void		get_primitive_attributes(t_env *e, FILE *stream);
+void		get_object_attributes(t_env *e, FILE *stream);
 size_t		get_material_number(t_env *e, char *str);
-void		get_camera_attributes(t_env *e, int fd);
-void		get_light_attributes(t_env *e, int fd);
+void		get_camera_attributes(t_env *e, FILE *stream);
+void		get_light_attributes(t_env *e, FILE *stream);
 t_colour	get_colour(t_env *e, t_split_string values);
 t_vector	get_vector(t_env *e, t_split_string values);
 t_vector	get_unit_vector(t_env *e, t_split_string values);
 void		get_tri(t_env *e, t_prim *o, t_split_string *values);
-void		get_material_attributes(t_env *e, int fd);
-void		read_obj(t_env *e, int fd);
+void		get_material_attributes(t_env *e, FILE *stream);
+void		read_obj(t_env *e, FILE *stream);
 void		init_material(t_material *m);
 
 /*
@@ -131,7 +112,7 @@ t_colour	refract(t_env *e, int depth, t_colour colour);
 /*
 ** src/shadow.c
 */
-int			in_shadow(t_env *e, t_light *light);
+double		in_shadow(t_env *e, t_light *light);
 
 /*
 ** src/camera_setup.c
@@ -186,6 +167,5 @@ void		export(t_env *e);
 ** src/half_bytes.c
 */
 void		half_bytes(SDL_Surface *s);
-void		blend(SDL_Surface *s1, SDL_Surface *s2);
 
 #endif

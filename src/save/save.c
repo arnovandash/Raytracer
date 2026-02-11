@@ -14,61 +14,38 @@
 
 static void	save_camra(t_camera *cam, int fd)
 {
-
-	ft_putstr_fd("	CAMERA\n", fd);
-	ft_putstr_fd("\t\tLOC\t\t\t", fd);
+	dprintf(fd, "\tCAMERA\n");
+	dprintf(fd, "\t\tLOC\t\t\t");
 	write_coord(cam->loc, fd);
-	ft_putstr_fd("\t\tDIR\t\t\t", fd);
+	dprintf(fd, "\t\tDIR\t\t\t");
 	write_coord(cam->dir, fd);
-	ft_putstr_fd("\t\tUP\t\t\t", fd);
+	dprintf(fd, "\t\tUP\t\t\t");
 	write_coord(cam->up, fd);
-	ft_putstr_fd("\t\tAPERTURE\t", fd);
-	dprintf(fd, "%lf\n", cam->a);
+	dprintf(fd, "\t\tAPERTURE\t%lf\n", cam->a);
 }
 
 static void	save_render(t_env *e, int fd)
 {
-	char	*tempx;
-	char	*tempy;
-	char	*print;
-
-	ft_putstr_fd("\tRENDER\t\t", fd);
-	tempx = ft_itoa(e->x);
-	tempy = ft_itoa(e->y);
-	print = ft_strjoin(tempx, " ");
-	ft_strdel(&tempx);
-	tempx = print;
-	print = ft_strjoin(tempx, tempy);
-	ft_strdel(&tempy);
-	ft_putendl_fd(print, fd);
-	ft_strdel(&print);
-	ft_putstr_fd("\tSUPER\t\t", fd);
-	print = ft_itoa(e->super);
-	ft_putendl_fd(print, fd);
-	ft_strdel(&print);
+	dprintf(fd, "\tRENDER\t\t%zu %zu\n", e->x, e->y);
+	dprintf(fd, "\tSUPER\t\t%zu\n", e->super);
 }
 
 void		save(t_env *e)
 {
 	int		fd;
-	char	*temp;
 
-	ft_putstr("Saving file... ");
-	temp = NULL;
+	printf("Saving file... ");
 	if ((fd = open(e->file_name, O_WRONLY | O_TRUNC)) == -1)
 		err(FILE_OPEN_ERROR, "Could not save the file", e);
-	ft_putstr_fd("# SCENE RT\n", fd);
-	ft_putstr_fd("	MAXDEPTH	", fd);
-	temp = ft_itoa(e->maxdepth);
-	ft_putendl_fd(temp, fd);
-	ft_strdel(&temp);
+	dprintf(fd, "# SCENE RT\n");
+	dprintf(fd, "\tMAXDEPTH\t%d\n", e->maxdepth);
 	save_render(e, fd);
-	ft_putstr_fd("\n", fd);
+	dprintf(fd, "\n");
 	save_camra(&e->camera, fd);
 	save_lights(e->light, e->lights, fd);
 	save_materials(e->material, e->materials, fd);
 	save_prims(e->prim, e->material, e->prims, fd);
 	save_objects(e->object, e->objects, e->material, fd);
 	close(fd);
-	ft_putstr("Done\n");
+	printf("Done\n");
 }

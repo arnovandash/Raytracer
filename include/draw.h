@@ -37,12 +37,4 @@ typedef struct	s_make_chunks
 	t_chunk			*c;
 }				t_make_chunks;
 
-typedef struct	s_render
-{
-	size_t		i;
-	double		angle;
-	double		angle_step;
-	t_vector	cam_origin;
-}				t_render;
-
 #endif

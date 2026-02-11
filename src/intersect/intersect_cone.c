@@ -74,8 +74,8 @@ int			intersect_cone(t_ray *r, t_prim *o, double *t)
 	c.dp_va = vdot(c.dist, o->dir);
 	c.a_v = vsub(r->dir, vmult(o->dir, c.v_va));
 	c.c_v = vsub(c.dist, vmult(o->dir, c.dp_va));
-	c.cos2 = cos(o->angle) * cos(o->angle);
-	c.sin2 = sin(o->angle) * sin(o->angle);
+	c.cos2 = o->cos_angle * o->cos_angle;
+	c.sin2 = o->sin_angle * o->sin_angle;
 	c.quad.a = c.cos2 * vdot(c.a_v, c.a_v) -
 		c.sin2 * c.v_va * c.v_va;
 	c.quad.b = 2.0 * c.cos2 * vdot(c.a_v, c.c_v) -

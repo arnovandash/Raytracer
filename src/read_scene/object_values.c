@@ -13,20 +13,21 @@
 #include "rt.h"
 #include <libgen.h>
 
-static void		get_quantities(t_object *o, int fd)
+static void		get_quantities(t_object *o, FILE *stream)
 {
-	char	*line;
+	char	*line = NULL;
+	size_t	len = 0;
 
-	while (ft_gnl(fd, &line))
+	while (getline(&line, &len, stream) != -1)
 	{
-		if (!ft_strncmp(line, "vn", 2))
+		if (!strncmp(line, "vn", 2))
 			++o->vnormals;
 		else if (line[0] == 'v')
 			++o->verticies;
 		else if (line[0] == 'f')
 			++o->faces;
-		ft_strdel(&line);
 	}
+	free(line);
 	if ((o->face = (t_face **)malloc(sizeof(t_face *) * o->faces)) == NULL)
 		perror("");
 	if ((o->v = (t_vector **)malloc(sizeof(t_vector *) * o->verticies)) == NULL)
@@ -36,31 +37,29 @@ static void		get_quantities(t_object *o, int fd)
 	o->faces = 0;
 	o->verticies = 0;
 	o->vnormals = 0;
+	fseek(stream, 0, SEEK_SET);
 }
 
 static void		set_object_values(t_env *e, char *pt1, char *pt2)
 {
-	int		fd;
+	FILE	*stream;
 	char	*file;
 
-	if (!ft_strcmp(pt1, "FILE"))
+	if (!strcmp(pt1, "FILE"))
 	{
 		file = pt2;
-		if ((fd = open(file, O_RDONLY)) == -1)
-			ft_sprintf(&file, "./%s/%s", dirname(e->file_name), pt2);
-		if ((fd = open(file, O_RDONLY)) == -1)
+		if ((stream = fopen(file, "r")) == NULL)
+			asprintf(&file, "./%s/%s", dirname(e->file_name), pt2);
+		if ((stream = fopen(file, "r")) == NULL)
 			err(FILE_OPEN_ERROR, file, e);
-		e->object[e->objects]->name = ft_strdup(file);
-		get_quantities(e->object[e->objects], fd);
-		close(fd);
-		if ((fd = open(file, O_RDONLY)) == -1)
-			err(FILE_OPEN_ERROR, file, e);
-		read_obj(e, fd);
+		e->object[e->objects]->name = strdup(file);
+		get_quantities(e->object[e->objects], stream);
+		read_obj(e, stream);
 		if (file != pt2)
-			ft_strdel(&file);
-		close(fd);
+			free(file);
+		fclose(stream);
 	}
-	else if (!ft_strcmp(pt1, "MATERIAL"))
+	else if (!strcmp(pt1, "MATERIAL"))
 		e->object[e->objects]->material = get_material_number(e, pt2);
 }
 
@@ -75,25 +74,26 @@ static void		init_object(t_object *o)
 	o->vnormals = 0;
 }
 
-void			get_object_attributes(t_env *e, int fd)
+void			get_object_attributes(t_env *e, FILE *stream)
 {
 	t_split_string	attr;
-	char			*temp_line;
+	char			*line = NULL;
+	size_t			len = 0;
 
 	attr.words = 0;
 	e->object[e->objects] = (t_object *)malloc(sizeof(t_object));
 	init_object(e->object[e->objects]);
-	while (ft_gnl(fd, &temp_line))
+	while (getline(&line, &len, stream) != -1)
 	{
-		if (temp_line[0] == '\0')
+		line[strcspn(line, "\n")] = '\0';
+		if (line[0] == '\0')
 			break ;
-		attr = ft_nstrsplit(temp_line, '\t');
+		attr = nstrsplit(line, '\t');
 		if (attr.words < 2)
-			err(FILE_FORMAT_ERROR, temp_line, e);
-		ft_strdel(&temp_line);
+			err(FILE_FORMAT_ERROR, "Object attributes", e);
 		set_object_values(e, attr.strings[0], attr.strings[1]);
-		ft_free_split(&attr);
+		free_split(&attr);
 	}
-	ft_strdel(&temp_line);
+	free(line);
 	++e->objects;
 }

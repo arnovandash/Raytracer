@@ -74,7 +74,7 @@ static void	set_refract_ray_object(t_env *e, t_env *refract)
 	n = get_normal(e, refract->ray.loc);
 	if (refract->flags & RAY_INSIDE)
 	{
-		n = vunit(vsub((t_vector){0.0, 0.0, 0.0}, n));
+		n = vunit(vneg(n));
 		if (refract_obj(e, refract, n))
 			refract->flags &= ~RAY_INSIDE;
 		else
@@ -97,7 +97,7 @@ static void	set_refract_ray_prim(t_env *e, t_env *refract)
 	n = get_normal(e, refract->ray.loc);
 	if (refract->flags & RAY_INSIDE)
 	{
-		n = vunit(vsub((t_vector){0.0, 0.0, 0.0}, n));
+		n = vunit(vneg(n));
 		if (refract_prim(e, refract, n))
 			refract->flags &= ~RAY_INSIDE;
 		else
@@ -114,25 +114,25 @@ static void	set_refract_ray_prim(t_env *e, t_env *refract)
 
 t_colour	refract(t_env *e, int depth, t_colour colour)
 {
-	t_env		*refract_env;
+	t_env		refract_env;
 
-	atomic_fetch_add(&g_stats.rays, 1);
-	atomic_fetch_add(&g_stats.refraction_rays, 1);
+	++g_tls_stats.rays;
+	++g_tls_stats.refraction_rays;
 	if (depth > e->maxdepth)
 		return (colour);
-	refract_env = copy_env(e);
+	refract_env = *e;
+	refract_env.p_hit = NULL;
 	if (e->hit_type == FACE)
 	{
-		set_refract_ray_object(e, refract_env);
-		intersect_scene(refract_env);
-		colour = find_colour_struct(refract_env, depth);
+		set_refract_ray_object(e, &refract_env);
+		intersect_scene(&refract_env);
+		colour = find_colour_struct(&refract_env, depth);
 	}
 	else if (e->hit_type == PRIMITIVE)
 	{
-		set_refract_ray_prim(e, refract_env);
-		intersect_scene(refract_env);
-		colour = find_colour_struct(refract_env, depth);
+		set_refract_ray_prim(e, &refract_env);
+		intersect_scene(&refract_env);
+		colour = find_colour_struct(&refract_env, depth);
 	}
-	free(refract_env);
 	return (colour);
 }

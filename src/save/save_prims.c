@@ -31,58 +31,40 @@ static void	put_type(int type, int fd)
 		temp = "disk";
 	else if (type == PRIM_TRIANGLE)
 		temp = "triangle";
-	ft_putstr_fd(temp, fd);
-	ft_putchar_fd('\n', fd);
-}
-
-static void	ft_putd_fd(double d, int fd)
-{
-	char	temp[20];
-
-	sprintf(temp, "%f\n", d);
-	ft_putstr_fd(temp, fd);
+	dprintf(fd, "%s\n", temp);
 }
 
 static void	save_prim2(const t_prim *prim, t_material **mat, const int fd)
 {
 	if (prim->type == PRIM_SPHERE || prim->type == PRIM_CYLINDER ||
 			prim->type == PRIM_HEMI_SPHERE)
-	{
-		ft_putstr_fd("\t\tRADIUS\t\t", fd);
-		ft_putd_fd(prim->radius, fd);
-	}
+		dprintf(fd, "\t\tRADIUS\t\t%f\n", prim->radius);
 	if (prim->type == PRIM_CONE)
-	{
-		ft_putstr_fd("\t\tANGLE\t\t", fd);
-		ft_putd_fd((180 / M_PI) * prim->angle, fd);
-	}
-	ft_putstr_fd("\t\tMATERIAL\t", fd);
-	ft_putstr_fd(mat[prim->material]->name, fd);
-	ft_putstr_fd("\n", fd);
+		dprintf(fd, "\t\tANGLE\t\t%f\n", (180 / M_PI) * prim->angle);
+	dprintf(fd, "\t\tMATERIAL\t%s\n", mat[prim->material]->name);
 }
 
 static void	save_prim(const t_prim *prim, t_material **mat, const int fd)
 {
-	ft_putstr_fd("\n\tPRIMITIVE\n", fd);
-	ft_putstr_fd("\t\tTYPE\t\t", fd);
+	dprintf(fd, "\n\tPRIMITIVE\n");
+	dprintf(fd, "\t\tTYPE\t\t");
 	put_type(prim->type, fd);
-	ft_putstr_fd("\t\tLOC\t\t\t", fd);
+	dprintf(fd, "\t\tLOC\t\t\t");
 	write_coord(prim->loc, fd);
 	if (prim->type == PRIM_HEMI_SPHERE)
 	{
-		ft_putstr_fd("\t\tDIR\t\t\t", fd);
+		dprintf(fd, "\t\tDIR\t\t\t");
 		write_coord(prim->dir, fd);
 	}
 	if (prim->type == PRIM_CONE || prim->type == PRIM_CYLINDER)
 	{
-		ft_putstr_fd("\t\tDIR\t\t\t", fd);
+		dprintf(fd, "\t\tDIR\t\t\t");
 		write_coord(prim->dir, fd);
-		ft_putstr_fd("\t\tLIMIT\t\t", fd);
-		ft_putd_fd(prim->limit, fd);
+		dprintf(fd, "\t\tLIMIT\t\t%f\n", prim->limit);
 	}
 	if (prim->type == PRIM_PLANE || prim->type == PRIM_DISK)
 	{
-		ft_putstr_fd("\t\tNORMAL\t\t", fd);
+		dprintf(fd, "\t\tNORMAL\t\t");
 		write_coord(prim->normal, fd);
 	}
 	save_prim2(prim, mat, fd);

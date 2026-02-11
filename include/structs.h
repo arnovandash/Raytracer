@@ -80,6 +80,8 @@ typedef struct	s_prim
 	size_t		material;
 	double		radius;
 	double		angle;
+	double		cos_angle;
+	double		sin_angle;
 	double		limit;
 }				t_prim;
 
@@ -126,6 +128,16 @@ typedef struct	s_stats
 	_Atomic size_t	intersection_tests;
 	_Atomic size_t	threads;
 }				t_stats;
+
+typedef struct	s_thread_stats
+{
+	size_t	rays;
+	size_t	primary_rays;
+	size_t	reflection_rays;
+	size_t	refraction_rays;
+	size_t	shadow_rays;
+	size_t	intersection_tests;
+}				t_thread_stats;
 
 /*
 ** ENVIRNMENT STRUCTURE

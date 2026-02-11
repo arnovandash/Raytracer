@@ -12,61 +12,26 @@
 
 #include "rt.h"
 
-static void	write_color_segment(int col, int fd)
-{
-	char *temp;
-
-	if (col != 0)
-	{
-		temp = ft_itoa_base(col, 16);
-		ft_putstr_fd(temp, fd);
-		ft_strdel(&temp);
-	}
-	else
-		ft_putstr_fd("00", fd);
-}
-
 static void	write_colour(t_colour *col, int fd)
 {
-	char	temp[20];
-	int		temp2;
-
-	temp2 = 0;
-	temp2 = (int)((col->r * 255.0));
-	write_color_segment(temp2, fd);
-	temp2 = 0;
-	temp2 = (int)((col->g * 255.0));
-	write_color_segment(temp2, fd);
-	temp2 = 0;
-	temp2 = (int)((col->b * 255.0));
-	write_color_segment(temp2, fd);
-	sprintf(temp, " %f\n", col->intensity);
-	ft_putstr_fd(temp, fd);
+	dprintf(fd, "%02X%02X%02X %f\n",
+		(int)(col->r * 255.0),
+		(int)(col->g * 255.0),
+		(int)(col->b * 255.0),
+		col->intensity);
 }
 
 static void	save_mat(t_material *mat, int fd)
 {
-	char	temp[20];
-
-	ft_putstr_fd("\n\tMATERIAL\n", fd);
-	ft_putstr_fd("\t\tNAME\t\t", fd);
-	ft_putstr_fd(mat->name, fd);
-	ft_putchar_fd('\n', fd);
-	ft_putstr_fd("\t\tDIFFUSE\t\t", fd);
+	dprintf(fd, "\n\tMATERIAL\n");
+	dprintf(fd, "\t\tNAME\t\t%s\n", mat->name);
+	dprintf(fd, "\t\tDIFFUSE\t\t");
 	write_colour(&mat->diff, fd);
-	ft_putstr_fd("\t\tSPECULAR\t", fd);
+	dprintf(fd, "\t\tSPECULAR\t");
 	write_colour(&mat->spec, fd);
-	ft_putstr_fd("\t\tREFLECT\t\t", fd);
-	sprintf(temp, "%f\n", mat->reflect);
-	ft_putstr_fd(temp, fd);
-	ft_bzero(temp, 20);
-	ft_putstr_fd("\t\tREFRACT\t\t", fd);
-	sprintf(temp, "%f\n", mat->refract);
-	ft_putstr_fd(temp, fd);
-	ft_bzero(temp, 20);
-	ft_putstr_fd("\t\tIOR\t\t\t", fd);
-	sprintf(temp, "%f\n", mat->ior);
-	ft_putstr_fd(temp, fd);
+	dprintf(fd, "\t\tREFLECT\t\t%f\n", mat->reflect);
+	dprintf(fd, "\t\tREFRACT\t\t%f\n", mat->refract);
+	dprintf(fd, "\t\tIOR\t\t\t%f\n", mat->ior);
 }
 
 void		save_materials(t_material **material, size_t materials, int fd)

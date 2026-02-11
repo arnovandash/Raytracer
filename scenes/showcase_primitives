@@ -1,0 +1,126 @@
+# SCENE RT
+# With reflective surfaces and colored lights
+	MAXDEPTH	8
+	RENDER		1280 720
+	SUPER		16
+
+	CAMERA
+		LOC			0 -18 5
+		DIR			0 0 0
+		UP			0 0 1
+
+	LIGHT
+		LOC			-6 -8 10
+		COLOUR		FFAA66
+		INTENSITY	1.0
+		HALF		60
+
+	LIGHT
+		LOC			6 -4 8
+		COLOUR		6688FF
+		INTENSITY	0.8
+		HALF		50
+
+	LIGHT
+		LOC			0 4 12
+		COLOUR		AAFFAA
+		INTENSITY	0.5
+		HALF		80
+
+	MATERIAL
+		NAME		chrome
+		DIFFUSE		CCCCCC 1.0
+		SPECULAR	FFFFFF 1.0
+		REFLECT		0.6
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		red_shiny
+		DIFFUSE		DD2200 1.0
+		SPECULAR	FFFFFF 0.8
+		REFLECT		0.3
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		gold
+		DIFFUSE		FFD700 1.0
+		SPECULAR	FFFFFF 0.9
+		REFLECT		0.4
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		teal
+		DIFFUSE		008888 1.0
+		SPECULAR	FFFFFF 0.7
+		REFLECT		0.2
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		purple
+		DIFFUSE		8822CC 1.0
+		SPECULAR	FFFFFF 0.7
+		REFLECT		0.2
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		floor
+		DIFFUSE		888888 1.0
+		SPECULAR	FFFFFF 0.2
+		REFLECT		0.25
+		REFRACT		0.0
+
+	MATERIAL
+		NAME		back_wall
+		DIFFUSE		555566 1.0
+		SPECULAR	FFFFFF 0.1
+		REFLECT		0.1
+		REFRACT		0.0
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 0 -3
+		NORMAL		0 0 1
+		MATERIAL	floor
+
+	PRIMITIVE
+		TYPE		plane
+		LOC			0 10 0
+		NORMAL		0 -1 0
+		MATERIAL	back_wall
+
+	PRIMITIVE
+		TYPE		sphere
+		LOC			-5 2 -0.5
+		RADIUS		2.5
+		MATERIAL	chrome
+
+	PRIMITIVE
+		TYPE		hemi_sphere
+		LOC			0 3 -1
+		DIR			0 0 1
+		RADIUS		2
+		MATERIAL	red_shiny
+
+	PRIMITIVE
+		TYPE		cone
+		LOC			5 2 -3
+		DIR			0 0 1
+		ANGLE		15
+		LIMIT		4
+		MATERIAL	gold
+
+	PRIMITIVE
+		TYPE		cylinder
+		LOC			-2.5 6 -3
+		DIR			0 0 1
+		RADIUS		1
+		LIMIT		3
+		MATERIAL	teal
+
+	PRIMITIVE
+		TYPE		disk
+		LOC			3 6 -1
+		NORMAL		0.2 -0.3 1
+		RADIUS		2
+		MATERIAL	purple
+

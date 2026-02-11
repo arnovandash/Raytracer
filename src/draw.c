@@ -13,12 +13,66 @@
 #include "draw.h"
 #include <stdio.h>
 
+static uint32_t	xorshift32(uint32_t *state)
+{
+	uint32_t	x;
+
+	x = *state;
+	x ^= x << 13;
+	x ^= x >> 17;
+	x ^= x << 5;
+	*state = x;
+	return (x);
+}
+
+static uint32_t	trace_pixel(t_chunk *c, double x, double y)
+{
+	++g_tls_stats.rays;
+	++g_tls_stats.primary_rays;
+	c->e->p_hit = NULL;
+	get_ray_dir(c->e, x, y);
+	intersect_scene(c->e);
+	return ((c->e->p_hit && !c->e->p_hit->s_bool &&
+		!(c->e->flags & KEY_G)) ?
+		find_colour(c->e) : find_base_colour(c->e));
+}
+
+static uint32_t	supersample(t_chunk *c, double px, double py, uint32_t *seed)
+{
+	double		r;
+	double		g;
+	double		b;
+	size_t		i;
+	uint32_t	col;
+	double		inv;
+
+	r = 0;
+	g = 0;
+	b = 0;
+	i = c->e->super;
+	while (i--)
+	{
+		col = trace_pixel(c,
+				px + (double)(xorshift32(seed) & 0xFFFF) / 65536.0,
+				py + (double)(xorshift32(seed) & 0xFFFF) / 65536.0);
+		r += (col >> 16) & 0xFF;
+		g += (col >> 8) & 0xFF;
+		b += col & 0xFF;
+	}
+	inv = 1.0 / c->e->super;
+	return (((uint32_t)(r * inv) << 16) |
+		((uint32_t)(g * inv) << 8) |
+		(uint32_t)(b * inv));
+}
+
 static void		*draw_chunk(void *q)
 {
 	t_chunk		*c;
 	uint32_t	*px;
+	uint32_t	seed;
 
 	c = (t_chunk *)q;
+	seed = (uint32_t)(c->d.x * 7919 + c->d.y * 104729 + 1);
 	c->stopx = MIN(c->d.x + c->d.w, (int)c->e->x);
 	c->stopy = MIN(c->d.y + c->d.h, (int)c->e->y);
 	while (c->d.y < c->stopy)
@@ -27,18 +81,23 @@ static void		*draw_chunk(void *q)
 		px = &c->px[c->d.y * c->e->x + c->d.x];
 		while (c->x < c->stopx)
 		{
-			atomic_fetch_add(&g_stats.rays, 1);
-			atomic_fetch_add(&g_stats.primary_rays, 1);
-			c->e->p_hit = NULL;
-			get_ray_dir(c->e, (double)c->x, (double)c->d.y);
-			intersect_scene(c->e);
-			*px++ = (c->e->p_hit && !c->e->p_hit->s_bool &&
-				!(c->e->flags & KEY_G)) ?
-				find_colour(c->e) : find_base_colour(c->e);
+			if (c->e->super > 1)
+				*px++ = supersample(c, (double)c->x,
+						(double)c->d.y, &seed);
+			else
+				*px++ = trace_pixel(c, (double)c->x,
+						(double)c->d.y);
 			++c->x;
 		}
 		++c->d.y;
 	}
+	atomic_fetch_add(&g_stats.rays, g_tls_stats.rays);
+	atomic_fetch_add(&g_stats.primary_rays, g_tls_stats.primary_rays);
+	atomic_fetch_add(&g_stats.reflection_rays, g_tls_stats.reflection_rays);
+	atomic_fetch_add(&g_stats.refraction_rays, g_tls_stats.refraction_rays);
+	atomic_fetch_add(&g_stats.shadow_rays, g_tls_stats.shadow_rays);
+	atomic_fetch_add(&g_stats.intersection_tests, g_tls_stats.intersection_tests);
+	memset(&g_tls_stats, 0, sizeof(t_thread_stats));
 	free(c->e);
 	free(c);
 	pthread_exit(0);
@@ -83,31 +142,8 @@ static void		make_chunks(t_env *e, SDL_Rect *d, SDL_Surface *img)
 
 static void		render(t_env *e, SDL_Rect d)
 {
-	t_render	r;
-
 	setup_camera_plane(e);
 	make_chunks(e, &d, e->img);
-	if (!(e->s_num) && e->super > 1)
-	{
-		r.cam_origin = e->camera.loc;
-		r.i = 0;
-		r.angle = 0;
-		r.angle_step = 2 * M_PI / (e->super - 1);
-		SDL_BlitSurface(e->img, NULL, e->dof, NULL);
-		while (r.i++ != e->super)
-		{
-			printf("Rendering frame %zu of %zu\n", r.i, e->super);
-			r.angle += r.angle_step;
-			e->camera.loc = vadd(r.cam_origin, (t_vector)
-				{cos(r.angle) * e->camera.a, 0.0, sin(r.angle) * e->camera.a});
-			setup_camera_plane(e);
-			make_chunks(e, &d, e->dof);
-			blend(e->img, e->dof);
-		}
-		e->camera.loc = r.cam_origin;
-		SDL_BlitSurface(e->img, NULL, e->win_img, NULL);
-		SDL_UpdateWindowSurface(e->win);
-	}
 }
 
 void			draw(t_env *e, SDL_Rect d)

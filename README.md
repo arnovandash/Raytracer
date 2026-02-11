@@ -1,119 +1,113 @@
 # RT
 
-This is a raytracing engine written in C using the SDL2 graphics library. It was originally created as a final semester group project at WeThinkCode_ in 2016.
+A raytracing engine written in C11 with SDL2. Originally created as a final semester group project at WeThinkCode_ (42 school network) in 2016.
+
+The original unmodified codebase is preserved on the [`archive`](../../tree/archive) branch.
+
+![Showcase: Diamond Room](./images/showcase_diamond_room.png)
+*Diamond mesh inside a glass box with reflective walls, refractive spheres, and colored lighting.*
+
+## Features
+
+- Multiple colored light sources with intensity falloff
+- Recursive reflections and refractions (configurable depth)
+- Glossy, matte, and transparent materials
+- Primitive types: sphere, plane, cylinder, cone, disk, hemisphere
+- OBJ mesh import with bounding-box culling
+- Per-pixel jittered supersampling (antialiasing) via the `SUPER` scene parameter
+- Multithreaded rendering (64x64 pixel chunks, one pthread per chunk)
+- Interactive camera controls (translate, rotate, zoom)
+- Scene serialization (save/load)
+- BMP export
+
+## Gallery
+
+![Showcase: Primitives](./images/showcase_primitives.png)
+*All supported primitive types: sphere, hemisphere, cylinder, cone, and disk.*
+
+![Mirror Box](./images/mirror_box_solid.png)
+*Reflective and refractive spheres in a mirrored room.*
+
+![Showcase: Suzanne](./images/showcase_suzanne.png)
+*Blender's Suzanne OBJ mesh rendered with glass material and colored lights.*
+
+## Build & Run
+
+**Dependencies:** GCC, SDL2 (`sdl2-config` must be in PATH), pthreads, math library.
+
+```bash
+make          # Build RT executable
+make re       # Full rebuild
+make clean    # Remove object files
+make fclean   # Remove all build artifacts
+./RT <scene>  # Render a scene file, e.g. ./RT scenes/showcase_diamond_room
+```
+
+Compiler flags: `-Wall -Wextra -Werror -O3 -pthread -std=c11`
+
+## Scene File Format
+
+Scenes are tab-indented declarative text files. See example scenes in `scenes/`.
+
+### Global Settings
+
+| Setting    | Description                                         |
+|------------|-----------------------------------------------------|
+| `MAXDEPTH` | Maximum recursion depth for reflections/refractions |
+| `RENDER`   | Image resolution as `width height`                  |
+| `SUPER`    | Antialiasing samples per pixel (1 = off)            |
+
+### Blocks
+
+**Camera**
+```
+CAMERA
+	LOC		x y z
+	DIR		x y z
+	UP		x y z
+```
+
+**Light**
+```
+LIGHT
+	LOC		x y z
+	COLOUR		RRGGBB
+	INTENSITY	value
+	HALF		value
+```
+`HALF` controls the half-distance for light attenuation.
+
+**Material**
+```
+MATERIAL
+	NAME		material_name
+	DIFFUSE		RRGGBB intensity
+	SPECULAR	RRGGBB intensity
+	REFLECT		value
+	REFRACT		value
+	IOR		value
+```
+`REFLECT` and `REFRACT` range from 0 to 1. `IOR` is the index of refraction.
+
+**Primitive**
+```
+PRIMITIVE
+	TYPE		sphere|plane|cylinder|cone|disk|hemisphere
+	LOC		x y z
+	DIR		x y z
+	NORMAL		x y z
+	RADIUS		value
+	ANGLE		value
+	MATERIAL	material_name
+```
+
+**Object** (OBJ mesh)
+```
+OBJECT
+	FILE		path/to/file.obj
+	MATERIAL	material_name
+```
 
 ## Credits
 
 This project was a collaborative effort. The majority of the original code was written by **adippena**. **rojones** also contributed significantly to the codebase and assisted me with the majority of my contributions.
-
-## Features
-
-*   Renders scenes from custom scene files.
-*   Can render OBJ files as objects in the scene.
-*   Reflections & refraction.
-*   Supports multiple light sources.
-*   Different coloured lights.
-*   Different materials types.
-
-## Screenshots
-
-![Screenshot 1](./images/01.png)
-
-![Screenshot 2](./images/02.png)
-
-## Scene File Format
-
-The scene file format is a simple text-based format. Each object in the scene is defined by a block of text, with properties indented by a tab.
-
-### Global Properties
-
-*   `MAXDEPTH`: The maximum recursion depth for reflections and refractions.
-
-### Camera
-
-Defines the viewpoint for the scene.
-
-```
-CAMERA
-    LOC    x y z
-    DIR    x y z
-    UP     x y z
-```
-
-*   `LOC`: The location of the camera in 3D space.
-*   `DIR`: The direction the camera is pointing.
-*   `UP`: The up vector for the camera.
-
-### Light
-
-Defines a light source in the scene.
-
-```
-LIGHT
-    LOC        x y z
-    COLOUR     RRGGBB
-    INTENSITY  value
-    HALF       value
-```
-
-*   `LOC`: The location of the light in 3D space.
-*   `COLOUR`: The colour of the light in hexadecimal format.
-*   `INTENSITY`: The intensity of the light.
-*   `HALF`: The half-distance for light attenuation.
-
-### Material
-
-Defines a material that can be applied to objects.
-
-```
-MATERIAL
-    NAME       material_name
-    DIFFUSE    RRGGBB intensity
-    SPECULAR   RRGGBB intensity
-    REFLECT    value
-    REFRACT    value
-    IOR        value
-```
-
-*   `NAME`: A unique name for the material.
-*   `DIFFUSE`: The diffuse colour and intensity of the material.
-*   `SPECULAR`: The specular colour and intensity of the material.
-*   `REFLECT`: The reflectivity of the material (0 to 1).
-*   `REFRACT`: The refractivity of the material (0 to 1).
-*   `IOR`: The index of refraction of the material.
-
-### Primitive
-
-Defines a primitive object in the scene.
-
-```
-PRIMITIVE
-    TYPE       sphere|plane|cylinder|cone|disk
-    LOC        x y z
-    DIR        x y z
-    NORMAL     x y z
-    RADIUS     value
-    ANGLE      value
-    MATERIAL   material_name
-```
-
-*   `TYPE`: The type of primitive.
-*   `LOC`: The location of the primitive in 3D space.
-*   `DIR`: The direction of the primitive (for cones and cylinders).
-*   `NORMAL`: The normal vector of the primitive (for planes).
-*   `RADIUS`: The radius of the primitive.
-*   `ANGLE`: The angle of the primitive (for cones).
-*   `MATERIAL`: The name of the material to apply to the primitive.
-
-### Object
-
-Defines an object from an OBJ file.
-
-```
-OBJECT
-    FILE       path/to/file.obj
-    MATERIAL   material_name
-```
-
-*   `FILE`: The path to the OBJ file.
-*   `MATERIAL`: The name of the material to apply to the object.

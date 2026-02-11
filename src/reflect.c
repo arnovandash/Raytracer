@@ -25,16 +25,16 @@ void		set_reflect_ray(t_env *e, t_env *reflect)
 
 t_colour	reflect(t_env *e, int depth)
 {
-	t_env		*reflect;
+	t_env		refl;
 	t_colour	colour;
 
-	atomic_fetch_add(&g_stats.rays, 1);
-	atomic_fetch_add(&g_stats.reflection_rays, 1);
+	++g_tls_stats.rays;
+	++g_tls_stats.reflection_rays;
 	colour = (t_colour){0.0, 0.0, 0.0, 0.0};
-	reflect = copy_env(e);
-	set_reflect_ray(e, reflect);
-	intersect_scene(reflect);
-	colour = find_colour_struct(reflect, depth + 1);
-	free(reflect);
+	refl = *e;
+	refl.p_hit = NULL;
+	set_reflect_ray(e, &refl);
+	intersect_scene(&refl);
+	colour = find_colour_struct(&refl, depth + 1);
 	return (colour);
 }

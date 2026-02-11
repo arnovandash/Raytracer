@@ -40,53 +40,54 @@ static void	make_box(t_object *o)
 static void	read_vertex(t_object *o, t_split_string *values)
 {
 	o->v[o->verticies] = (t_vector *)malloc(sizeof(t_vector));
-	o->v[o->verticies]->x = ft_atod(values->strings[1]);
-	o->v[o->verticies]->y = ft_atod(values->strings[2]);
-	o->v[o->verticies]->z = ft_atod(values->strings[3]);
+	o->v[o->verticies]->x = atof(values->strings[1]);
+	o->v[o->verticies]->y = atof(values->strings[2]);
+	o->v[o->verticies]->z = atof(values->strings[3]);
 	++o->verticies;
 }
 
 static void	read_vnormal(t_object *o, t_split_string *values)
 {
 	o->vn[o->vnormals] = (t_vector *)malloc(sizeof(t_vector));
-	o->vn[o->vnormals]->x = ft_atod(values->strings[1]);
-	o->vn[o->vnormals]->y = ft_atod(values->strings[2]);
-	o->vn[o->vnormals]->z = ft_atod(values->strings[3]);
+	o->vn[o->vnormals]->x = atof(values->strings[1]);
+	o->vn[o->vnormals]->y = atof(values->strings[2]);
+	o->vn[o->vnormals]->z = atof(values->strings[3]);
 	++o->vnormals;
 }
 
 static void	read_face(t_object *o, t_split_string *values)
 {
 	o->face[o->faces] = (t_face *)malloc(sizeof(t_face));
-	o->face[o->faces]->v0 = o->v[ft_atoi(values->strings[1]) - 1];
-	o->face[o->faces]->v1 = o->v[ft_atoi(values->strings[2]) - 1];
-	o->face[o->faces]->v2 = o->v[ft_atoi(values->strings[3]) - 1];
+	o->face[o->faces]->v0 = o->v[atoi(values->strings[1]) - 1];
+	o->face[o->faces]->v1 = o->v[atoi(values->strings[2]) - 1];
+	o->face[o->faces]->v2 = o->v[atoi(values->strings[3]) - 1];
 	o->face[o->faces]->n =\
-		o->vn[ft_atoi(ft_strrchr(values->strings[1], '/') + 1) - 1];
+		o->vn[atoi(strrchr(values->strings[1], '/') + 1) - 1];
 	++o->faces;
 }
 
-void		read_obj(t_env *e, int fd)
+void		read_obj(t_env *e, FILE *stream)
 {
 	t_split_string	values;
-	char			*line;
+	char			*line = NULL;
+	size_t			len = 0;
 	t_object		*o;
 
 	o = e->object[e->objects];
-	while (ft_gnl(fd, &line))
+	while (getline(&line, &len, stream) != -1)
 	{
 		if (line[0] != '#' || line[0] != 's')
 		{
-			values = ft_nstrsplit(line, ' ');
-			if (!ft_strcmp(values.strings[0], "v") && values.words == 4)
+			values = nstrsplit(line, ' ');
+			if (!strcmp(values.strings[0], "v") && values.words == 4)
 				read_vertex(o, &values);
-			if (!ft_strcmp(values.strings[0], "vn") && values.words == 4)
+			if (!strcmp(values.strings[0], "vn") && values.words == 4)
 				read_vnormal(o, &values);
-			if (!ft_strcmp(values.strings[0], "f") && values.words == 4)
+			if (!strcmp(values.strings[0], "f") && values.words == 4)
 				read_face(o, &values);
-			ft_free_split(&values);
+			free_split(&values);
 		}
-		ft_strdel(&line);
 	}
+	free(line);
 	make_box(o);
 }

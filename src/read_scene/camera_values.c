@@ -16,34 +16,35 @@ static void	set_camera_values(t_env *e, char *pt1, char *pt2)
 {
 	t_split_string	values;
 
-	values = ft_nstrsplit(pt2, ' ');
-	if (!ft_strcmp(pt1, "LOC"))
+	values = nstrsplit(pt2, ' ');
+	if (!strcmp(pt1, "LOC"))
 		e->camera.loc = get_vector(e, values);
-	else if (!ft_strcmp(pt1, "DIR"))
+	else if (!strcmp(pt1, "DIR"))
 		e->camera.dir = get_vector(e, values);
-	else if (!ft_strcmp(pt1, "UP"))
+	else if (!strcmp(pt1, "UP"))
 		e->camera.up = get_vector(e, values);
-	else if (!ft_strcmp(pt1, "APERTURE"))
-		e->camera.a = ft_atod(pt2);
-	ft_free_split(&values);
+	else if (!strcmp(pt1, "APERTURE"))
+		e->camera.a = atof(pt2);
+	free_split(&values);
 }
 
-void		get_camera_attributes(t_env *e, int fd)
+void		get_camera_attributes(t_env *e, FILE *stream)
 {
 	t_split_string	attr;
-	char			*temp_line;
+	char			*line = NULL;
+	size_t			len = 0;
 
 	attr.words = 0;
-	while (ft_gnl(fd, &temp_line))
+	while (getline(&line, &len, stream) != -1)
 	{
-		if (temp_line[0] == '\0')
+		line[strcspn(line, "\n")] = '\0';
+		if (line[0] == '\0')
 			break ;
-		attr = ft_nstrsplit(temp_line, '\t');
-		ft_strdel(&temp_line);
+		attr = nstrsplit(line, '\t');
 		if (attr.words < 2)
 			err(FILE_FORMAT_ERROR, "Camera attributes", e);
 		set_camera_values(e, &attr.strings[0][0], &attr.strings[1][0]);
-		ft_free_split(&attr);
+		free_split(&attr);
 	}
-	ft_strdel(&temp_line);
+	free(line);
 }

@@ -14,8 +14,5 @@
 
 void	write_coord(t_vector v, int fd)
 {
-	char	temp[40];
-
-	sprintf(temp, "%f %f %f\n", v.x, v.y, v.z);
-	ft_putstr_fd(temp, fd);
+	dprintf(fd, "%f %f %f\n", v.x, v.y, v.z);
 }

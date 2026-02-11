@@ -17,65 +17,63 @@ static void	scene_attributes(t_env *e, char *line)
 	t_split_string	split;
 	t_split_string	render;
 
-	split = ft_nstrsplit(line, '\t');
+	split = nstrsplit(line, '\t');
 	if (split.strings[0][0] != '#' && split.words != 2)
 		err(FILE_FORMAT_ERROR, "Scene arrtibutes", e);
-	if (!ft_strcmp(split.strings[0], "MAXDEPTH"))
-		e->maxdepth = MAX(ft_atoi(split.strings[1]), 1);
-	if (!ft_strcmp(split.strings[0], "RENDER"))
+	if (!strcmp(split.strings[0], "MAXDEPTH"))
+		e->maxdepth = MAX(atoi(split.strings[1]), 1);
+	if (!strcmp(split.strings[0], "RENDER"))
 	{
-		render = ft_nstrsplit(split.strings[1], ' ');
+		render = nstrsplit(split.strings[1], ' ');
 		if (render.words != 2)
 			err(FILE_FORMAT_ERROR, "RENDER [tab] x-res y-res", e);
-		e->x = ft_atoi(render.strings[0]);
-		e->y = ft_atoi(render.strings[1]);
+		e->x = atoi(render.strings[0]);
+		e->y = atoi(render.strings[1]);
 	}
-	if (!ft_strcmp(split.strings[0], "SUPER"))
-		e->super = MAX(ft_atoi(split.strings[1]), 0);
-	ft_free_split(&split);
+	if (!strcmp(split.strings[0], "SUPER"))
+		e->super = MAX(atoi(split.strings[1]), 0);
+	free_split(&split);
 }
 
-static void	call_type(t_env *e, int fd, char **line)
+static void	call_type(t_env *e, FILE *stream, char **line)
 {
 	char	*temp_line;
 
-	temp_line = ft_strtrim(*line);
-	ft_strdel(line);
-	if (!ft_strcmp(temp_line, "PRIMITIVE"))
-		get_primitive_attributes(e, fd);
-	if (!ft_strcmp(temp_line, "OBJECT"))
-		get_object_attributes(e, fd);
-	else if (!ft_strcmp(temp_line, "CAMERA"))
-		get_camera_attributes(e, fd);
-	else if (!ft_strcmp(temp_line, "LIGHT"))
-		get_light_attributes(e, fd);
-	else if (!ft_strcmp(temp_line, "MATERIAL"))
-		get_material_attributes(e, fd);
-	ft_strdel(&temp_line);
+	temp_line = strtrim(*line);
+	if (!strcmp(temp_line, "PRIMITIVE"))
+		get_primitive_attributes(e, stream);
+	if (!strcmp(temp_line, "OBJECT"))
+		get_object_attributes(e, stream);
+	else if (!strcmp(temp_line, "CAMERA"))
+		get_camera_attributes(e, stream);
+	else if (!strcmp(temp_line, "LIGHT"))
+		get_light_attributes(e, stream);
+	else if (!strcmp(temp_line, "MATERIAL"))
+		get_material_attributes(e, stream);
+	free(temp_line);
 }
 
-static void	get_quantities(t_env *e, int fd)
+static void	get_quantities(t_env *e, FILE *stream)
 {
-	char	*temp;
-	char	*line;
+	char	*line = NULL;
+	size_t	len = 0;
 	size_t	num;
 
-	temp = NULL;
 	num = 1;
-	while ((ft_gnl(fd, &temp) || temp != NULL) && ++num)
+	while (getline(&line, &len, stream) != -1 && ++num)
 	{
-		if (temp[ft_strlen(temp) - 1] == '\t')
-			err(FILE_FORMAT_ERROR, ft_strjoin(ft_itoa(num),
-				" Line ends in a tab"), e);
-		line = ft_strtrim(temp);
-		ft_strdel(&temp);
-		(!ft_strcmp(line, "LIGHT")) ? ++e->lights : 0;
-		(!ft_strcmp(line, "MATERIAL")) ? ++e->materials : 0;
-		(!ft_strcmp(line, "PRIMITIVE")) ? ++e->prims : 0;
-		(!ft_strcmp(line, "OBJECT")) ? ++e->objects : 0;
-		ft_strdel(&line);
+		line[strcspn(line, "\n")] = '\0';
+		if (line[strlen(line) - 1] == '\t')
+			err(FILE_FORMAT_ERROR, "Line ends in a tab", e);
+		char *trimmed_line = strtrim(line);
+		(!strcmp(trimmed_line, "LIGHT")) ? ++e->lights : 0;
+		(!strcmp(trimmed_line, "MATERIAL")) ? ++e->materials : 0;
+		(!strcmp(trimmed_line, "PRIMITIVE")) ? ++e->prims : 0;
+		(!strcmp(trimmed_line, "OBJECT")) ? ++e->objects : 0;
+		free(trimmed_line);
 	}
-	ft_printf("%d:\tLIGHTS\n%d:\tMATERIALS\n%d:\tPRIMITIVES\n%d:\tOBJECTS\n",\
+	free(line);
+	printf("%d:\tLIGHTS\n%d:\tMATERIALS\n%d:\tPRIMITIVES\n%d:\tOBJECTS\n",
 		(int)e->lights, (int)e->materials, (int)e->prims, (int)e->objects);
 	e->light = (t_light **)malloc(sizeof(t_light *) * e->lights);
 	e->material = (t_material **)malloc(sizeof(t_material *) * ++e->materials);
@@ -83,46 +81,49 @@ static void	get_quantities(t_env *e, int fd)
 	e->object = (t_object **)malloc(sizeof(t_object *) * e->objects);
 }
 
-static void	init_read_scene(t_env *e, int fd)
+static void	init_read_scene(t_env *e, FILE *stream)
 {
-	get_quantities(e, fd);
-	close(fd);
+	get_quantities(e, stream);
+	fseek(stream, 0, SEEK_SET);
 	e->lights = 0;
 	e->materials = 0;
 	e->prims = 0;
 	e->objects = 0;
 	e->material[0] = (t_material *)malloc(sizeof(t_material));
 	init_material(e->material[0]);
-	ft_strdel(&e->material[0]->name);
-	e->material[e->materials]->name = ft_strdup("DEFAULT");
+	free(e->material[0]->name);
+	e->material[0]->name = NULL;
+	e->material[e->materials]->name = strdup("DEFAULT");
 	++e->materials;
 }
 
 void		read_scene(char *file, t_env *e)
 {
-	int			fd;
-	char		*line;
-	char		*temp_line;
+	char			*line = NULL;
+	size_t			len = 0;
+	FILE			*stream;
 
-	if ((fd = open(file, O_RDONLY)) == -1)
+	stream = fopen(file, "r");
+	if (stream == NULL)
 		err(FILE_OPEN_ERROR, "Scene file", e);
-	if ((ft_gnl(fd, &line) == -1) || (ft_strcmp(line, "# SCENE RT")))
+	if (getline(&line, &len, stream) == -1)
 		err(FILE_FORMAT_ERROR, "Scene file must start with '# SCENE RT'", e);
-	ft_strdel(&line);
-	init_read_scene(e, fd);
-	if ((fd = open(file, O_RDONLY)) == -1)
-		err(FILE_OPEN_ERROR, "Scene file", e);
-	while (ft_gnl(fd, &temp_line))
+	line[strcspn(line, "\n")] = '\0';
+	if (strcmp(line, "# SCENE RT"))
+		err(FILE_FORMAT_ERROR, "Scene file must start with '# SCENE RT'", e);
+	init_read_scene(e, stream);
+	while (getline(&line, &len, stream) != -1)
 	{
-		if (temp_line[0] == '\0')
+		line[strcspn(line, "\n")] = '\0';
+		if (line[0] == '\0')
 			break ;
-		line = ft_strtrim(temp_line);
-		ft_strdel(&temp_line);
 		scene_attributes(e, line);
-		ft_strdel(&line);
 	}
-	ft_strdel(&temp_line);
-	while (ft_gnl(fd, &temp_line))
-		call_type(e, fd, &temp_line);
-	close(fd);
+	while (getline(&line, &len, stream) != -1)
+	{
+		line[strcspn(line, "\n")] = '\0';
+		call_type(e, stream, &line);
+	}
+	free(line);
+	fclose(stream);
 }

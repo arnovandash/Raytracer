@@ -14,13 +14,9 @@
 
 static void	save_object(t_object *obj, t_material **mat, int fd)
 {
-	ft_putstr_fd("\n\tOBJECT\n", fd);
-	ft_putstr_fd("\t\tFILE\t\t", fd);
-	ft_putstr_fd(obj->name, fd);
-	ft_putchar_fd('\n', fd);
-	ft_putstr_fd("\t\tMATERIAL\t", fd);
-	ft_putstr_fd(mat[obj->material]->name, fd);
-	ft_putstr_fd("\n", fd);
+	dprintf(fd, "\n\tOBJECT\n");
+	dprintf(fd, "\t\tFILE\t\t%s\n", obj->name);
+	dprintf(fd, "\t\tMATERIAL\t%s\n", mat[obj->material]->name);
 }
 
 void		save_objects(t_object **o, size_t objects, t_material **m, int fd)
