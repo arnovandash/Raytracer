@@ -1,14 +1,12 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   free_prim.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rojones <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/08/17 07:47:18 by rojones           #+#    #+#             */
-/*   Updated: 2016/08/22 21:36:56 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** free_prim.c -- Deallocate the array of geometric primitives.
+**
+** Takes a triple pointer (t_prim ***) so that it can NULL the caller's
+** pointer after freeing, preventing use-after-free. This pattern is used
+** because C passes pointers by value -- to modify the caller's pointer,
+** we need a pointer to that pointer (and the caller already stores a
+** double pointer t_prim **prim, so we pass &prim which is t_prim ***).
+*/
 
 #include "rt.h"
 

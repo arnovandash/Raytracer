@@ -1,14 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   prototypes.h                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adippena <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/07/26 14:49:05 by adippena          #+#    #+#             */
-/*   Updated: 2016/09/03 15:17:26 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** prototypes.h -- Function declarations for all modules.
+** Grouped by source file for easy navigation.
+*/
 
 #ifndef PROTOTYPES_H
 # define PROTOTYPES_H

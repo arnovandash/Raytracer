@@ -1,14 +1,11 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   free_obj_vect.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rojones <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/08/17 08:24:50 by rojones           #+#    #+#             */
-/*   Updated: 2016/08/22 21:36:54 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** free_obj_vert.c -- Generic void** array deallocator.
+**
+** Used to free arrays of heap-allocated items where the element type
+** varies (vertices as t_vector**, normals as t_vector**, faces as
+** t_face**). By accepting void**, the same function handles all three
+** without code duplication.
+*/
 
 #include "rt.h"
 

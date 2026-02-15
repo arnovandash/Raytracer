@@ -1,17 +1,24 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   nstrsplit.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adippena <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/05/15 11:30:36 by adippena          #+#    #+#             */
-/*   Updated: 2016/07/16 17:00:35 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** nstrsplit.c -- Custom string splitting utility.
+**
+** Splits a string by a single delimiter character into an array of
+** substrings. Replaces the former libft ft_nstrsplit function.
+**
+** The result is returned as a t_split_string containing the array of
+** heap-allocated substring copies and the word count. Consecutive
+** delimiters are treated as a single separator (no empty strings).
+**
+** Example: nstrsplit("  hello   world  ", ' ')
+**   -> { strings: ["hello", "world"], words: 2 }
+*/
 
 #include "rt.h"
 
+/*
+** Extract a substring of 'len' characters starting at position 'start'.
+** Returns a new heap-allocated string. Pads with null bytes if the
+** source string is shorter than 'len'.
+*/
 static char		*strsub(char const *s, unsigned int start, size_t len)
 {
 	char	*str;
@@ -37,6 +44,10 @@ static char		*strsub(char const *s, unsigned int start, size_t len)
 	return (str);
 }
 
+/*
+** Count the number of delimiter-separated tokens in the string.
+** Skips runs of delimiters, then counts each non-delimiter run as one word.
+*/
 static int		count_words(const char *s, char c)
 {
 	size_t	words;
@@ -56,6 +67,11 @@ static int		count_words(const char *s, char c)
 	return (words);
 }
 
+/*
+** Advance past any leading delimiters and return a pointer to the start
+** of the next word. Sets *len to the number of non-delimiter characters
+** in that word.
+*/
 static char		*next_word(const char *s, char c, size_t *len)
 {
 	*len = 0;
@@ -66,6 +82,11 @@ static char		*next_word(const char *s, char c, size_t *len)
 	return ((char *)s);
 }
 
+/*
+** Split string 's' by delimiter 'c' into an array of substrings.
+** Returns a t_split_string with the array and word count.
+** On allocation failure, words is set to (size_t)-1 as an error signal.
+*/
 t_split_string	nstrsplit(char const *s, char c)
 {
 	t_split_string	split;
@@ -95,6 +116,7 @@ t_split_string	nstrsplit(char const *s, char c)
 	return (split);
 }
 
+/* Free all strings in the split result and the array itself. */
 void		free_split(t_split_string *split)
 {
 	size_t	i;

@@ -1,14 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   free_light.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rojones <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/08/17 08:00:54 by rojones           #+#    #+#             */
-/*   Updated: 2016/08/22 21:36:32 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** free_light.c -- Deallocate the array of light sources.
+**
+** Frees each individual t_light struct, then the pointer array itself.
+** Iterates backwards using a decrementing counter (common C idiom for
+** cleanup loops that avoids underflow issues with size_t).
+*/
 
 #include "rt.h"
 

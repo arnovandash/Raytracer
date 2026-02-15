@@ -1,17 +1,26 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   key_press.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: arnovan- <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/08/12 15:44:46 by arnovan-          #+#    #+#             */
-/*   Updated: 2016/09/02 22:27:15 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** key_press.c -- Keyboard input handler using bitmask state machine
+**
+** The renderer uses a bitmask (e->flags) to track which keys are currently
+** held down. Each key maps to a single bit (defined in defines.h as KEY_*).
+** This approach allows checking multiple simultaneous key states efficiently
+** with bitwise AND, and combining states with bitwise OR.
+**
+** Two separate handlers exist because key behavior differs by mode:
+**   - key_press()  : Default mode -- grab, select, axis constraints
+**   - mkey_press() : Middle-click camera mode -- WASD/Space/Ctrl movement
+**
+** Design note: S key has dual meaning depending on mode. In default mode,
+** it toggles the "scale" flag (XOR). In camera mode, it means "move backward."
+*/
 
 #include "rt.h"
 
+/*
+** Clears the corresponding flag bit when a key is released.
+** Uses bitwise AND with the complement (~) to zero out exactly one bit
+** while leaving all other bits unchanged.
+*/
 void		key_release(t_env *e, SDL_Keycode key)
 {
 	if (key == SDLK_LSHIFT)
@@ -30,6 +39,11 @@ void		key_release(t_env *e, SDL_Keycode key)
 		e->flags &= ~KEY_D;
 }
 
+/*
+** Toggles between selecting all and deselecting all primitives.
+** If any primitives are currently selected (s_num > 0), deselect all;
+** otherwise, select all. Re-renders the scene to show selection highlighting.
+*/
 static void	key_press_a(t_env *e)
 {
 	if (e->s_num)
@@ -45,6 +59,18 @@ static void	key_press_a(t_env *e)
 	draw(e, (SDL_Rect){0, 0, e->x, e->y});
 }
 
+/*
+** Axis constraint toggle for grab/scale/rotate operations.
+**
+** Without Shift: Pressing X constrains movement to X axis only
+**   -> Sets KEY_X, clears KEY_Y and KEY_Z
+**
+** With Shift: Pressing Shift+X constrains to all axes EXCEPT X (i.e. Y+Z)
+**   -> Clears KEY_X, sets KEY_Y and KEY_Z
+**
+** This mirrors Blender's axis constraint behavior where Shift+axis means
+** "lock that axis, move freely on the other two."
+*/
 static void	key_press_xyz(t_env *e, SDL_Keycode key)
 {
 	if (key == SDLK_x)
@@ -61,6 +87,20 @@ static void	key_press_xyz(t_env *e, SDL_Keycode key)
 			(e->flags & ~(KEY_X | KEY_Y)) | KEY_Z;
 }
 
+/*
+** Main key press handler (default mode, not camera movement mode).
+**
+** G key: Enters "grab" mode (Blender-style object manipulation). Only works
+**   if at least one primitive is selected. Enables SDL relative mouse mode
+**   so mouse deltas drive object movement instead of cursor position.
+**
+** A key: Select/deselect all (only when not in grab mode to avoid conflict).
+**
+** S key: Toggles scale flag (XOR ^= so pressing again turns it off).
+** R key: Toggles rotate flag (same XOR toggle pattern).
+**
+** X/Y/Z keys: Delegated to key_press_xyz for axis constraint logic.
+*/
 void		key_press(t_env *e, SDL_Keycode key)
 {
 	if (key == SDLK_LSHIFT)
@@ -81,6 +121,16 @@ void		key_press(t_env *e, SDL_Keycode key)
 		key_press_xyz(e, key);
 }
 
+/*
+** Camera movement key handler -- only called during middle-click camera mode.
+** Sets flag bits for continuous movement keys (WASD/Space/Ctrl).
+** These flags are polled each frame by cam_move() to translate the camera.
+**
+** Key mapping (world-space axes):
+**   W/S = +Y/-Y (forward/backward)
+**   A/D = -X/+X (left/right)
+**   Space/Ctrl = +Z/-Z (up/down)
+*/
 void		mkey_press(t_env *e, SDL_Keycode key)
 {
 	if (key == SDLK_LCTRL)

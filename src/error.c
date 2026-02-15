@@ -1,17 +1,23 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adippena <angusdippenaar@gmail.com>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/07/08 19:58:53 by adippena          #+#    #+#             */
-/*   Updated: 2016/09/03 15:52:31 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** error.c -- Error handling and cleanup.
+**
+** Provides centralized error reporting and resource cleanup:
+**   - err(): Builds a descriptive error message from an error code and
+**     the originating function name. Prints to stdout with ANSI red color.
+**     Error codes <= 15 are system errors (uses perror to append errno
+**     description). Error codes >= 16 are format/usage errors (uses puts).
+**   - exit_rt(): Frees all dynamically allocated resources (SDL surfaces,
+**     window, scene data) and exits cleanly.
+**   - strjoin(): Simple heap-allocated string concatenation helper,
+**     replacing the former libft ft_strjoin function.
+*/
 
 #include "rt.h"
 
+/*
+** Concatenate two strings into a new heap-allocated string.
+** Caller is responsible for freeing the result.
+*/
 char	*strjoin(char const *s1, char const *s2)
 {
 	char	*new;
@@ -29,6 +35,11 @@ char	*strjoin(char const *s1, char const *s2)
 	return (new);
 }
 
+/*
+** Clean shutdown: free all resources in reverse order of allocation.
+** Skips cleanup for USAGE_ERROR since nothing was allocated yet.
+** Always calls SDL_Quit() to properly shut down the SDL subsystem.
+*/
 void	exit_rt(t_env *e, int code)
 {
 	if (code != USAGE_ERROR)
@@ -50,6 +61,13 @@ void	exit_rt(t_env *e, int code)
 	exit(0);
 }
 
+/*
+** Report an error and exit. Constructs a message from the error code
+** and function name. ANSI escape "\e[1;91m" sets bold bright red text,
+** "\e[0m" resets. System errors (code <= 15) use perror() to append
+** the errno string (e.g., "Permission denied"). Format errors use puts().
+** USAGE_ERROR (32) is a static string -- not heap-allocated, so not freed.
+*/
 void	err(int error_no, char *function, t_env *e)
 {
 	char	*error;
@@ -69,6 +87,7 @@ void	err(int error_no, char *function, t_env *e)
 		puts(error);
 	else
 		perror(error);
+	/* Only free heap-allocated error strings (codes < 32). */
 	if (error_no < 32)
 		strdel(&error);
 	exit_rt(e, error_no);

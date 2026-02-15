@@ -1,17 +1,21 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   strtrim.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adippena <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/05/15 11:30:44 by adippena          #+#    #+#             */
-/*   Updated: 2016/07/09 16:58:16 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** strtrim.c -- Whitespace trimming utility.
+**
+** Strips leading and trailing whitespace (spaces, tabs, newlines) from a
+** string. Returns a new heap-allocated copy with the trimmed content.
+** Replaces the former libft ft_strtrim function.
+**
+** Example: strtrim("  \thello world\n  ") -> "hello world"
+*/
 
 #include "rt.h"
 
+/*
+** Trim leading and trailing whitespace from string 's'.
+** Finds the first and last non-whitespace positions, then copies that
+** range into a new calloc'd string. Returns an empty string if the
+** input is all whitespace.
+*/
 char	*strtrim(char const *s)
 {
 	char	*new_str;

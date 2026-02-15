@@ -1,14 +1,14 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   free_object.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rojones <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/08/17 08:05:34 by rojones           #+#    #+#             */
-/*   Updated: 2016/08/22 21:36:51 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** free_object.c -- Deallocate OBJ mesh objects.
+**
+** Each t_object owns:
+**   - A heap-allocated name string
+**   - An array of t_face pointers (triangle faces)
+**   - An array of t_vector pointers (vertex positions)
+**   - An array of t_vector pointers (vertex normals)
+** All sub-arrays are freed via free_obj_vert (generic void** freer),
+** then the object struct itself, then the top-level array.
+*/
 
 #include "rt.h"
 

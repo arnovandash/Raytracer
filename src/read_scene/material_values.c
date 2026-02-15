@@ -1,17 +1,40 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   material_values.c                                  :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adippena <angusdippenaar@gmail.com>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/07/09 12:40:41 by adippena          #+#    #+#             */
-/*   Updated: 2016/09/04 15:06:05 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** material_values.c -- Parse MATERIAL block from scene file.
+**
+** Materials define the surface appearance of objects in the raytracer.
+** Each material has the following properties:
+**
+**   NAME     - Unique identifier used by PRIMITIVEs and OBJECTs to reference
+**              this material by name.
+**   DIFFUSE  - Base color and intensity for Lambertian (matte) shading.
+**              Given as "RRGGBB intensity" where RRGGBB is hex color and
+**              intensity is a 0-1 multiplier controlling how much diffuse
+**              light the surface reflects.
+**   SPECULAR - Highlight color and intensity for Phong specular reflections.
+**              Controls the appearance of shiny highlights from light sources.
+**   REFLECT  - Reflectivity coefficient (0-1). 0 = no mirror reflection,
+**              1 = perfect mirror. Intermediate values blend reflected color
+**              with the surface's own diffuse/specular shading.
+**   REFRACT  - Transparency coefficient (0-1). 0 = fully opaque,
+**              1 = fully transparent. Controls how much light passes through
+**              the object via refraction rays.
+**   IOR      - Index of refraction (e.g., 1.0 = vacuum/air, 1.33 = water,
+**              1.5 = glass, 2.42 = diamond). Used by Snell's law to bend
+**              refraction rays at surface boundaries.
+**
+** The DEFAULT material (index 0, hot pink) is created automatically by
+** read_scene.c and is used as a fallback for objects with unresolved
+** material names.
+*/
 
 #include "rt.h"
 
+/*
+** to_range -- Clamp a value to the interval [min, max].
+**
+** Used to ensure material properties stay within physically meaningful
+** bounds (e.g., reflectivity must be between 0 and 1).
+*/
 static double	to_range(double value, double min, double max)
 {
 	value = (value < min) ? min : value;
@@ -19,6 +42,13 @@ static double	to_range(double value, double min, double max)
 	return (value);
 }
 
+/*
+** set_material_values -- Assign a parsed key-value pair to the current material.
+**
+** NAME replaces the default name via strdup (the old name is freed first).
+** DIFFUSE and SPECULAR are parsed as hex color + optional intensity via
+** get_colour(). REFLECT, REFRACT are clamped to [0,1]. IOR is stored as-is.
+*/
 static void		set_material_values(t_env *e, char *pt1, char *pt2)
 {
 	t_split_string	values;
@@ -45,6 +75,18 @@ static void		set_material_values(t_env *e, char *pt1, char *pt2)
 	free_split(&values);
 }
 
+/*
+** init_material -- Set sensible defaults for a new material.
+**
+** The default diffuse color is hot pink (R=1.0, G=0.0, B=0.87), chosen
+** deliberately as a "missing texture" color -- it stands out obviously
+** in renders, making it easy to spot objects that failed to load their
+** intended material. This is a common game-engine convention (e.g.,
+** Source engine's famous pink-and-black checkerboard).
+**
+** Default specular is white at 50% intensity. No reflection or refraction.
+** IOR of 1.0 matches vacuum/air (no bending of refraction rays).
+*/
 void			init_material(t_material *m)
 {
 	m->name = strdup("UNNAMED");
@@ -55,6 +97,13 @@ void			init_material(t_material *m)
 	m->spec = (t_colour){1.0, 1.0, 1.0, 0.5};
 }
 
+/*
+** get_material_attributes -- Read all lines of a MATERIAL block.
+**
+** Allocates a new t_material, initializes it with defaults (hot-pink),
+** then reads tab-delimited attribute lines until a blank line terminates
+** the block. After parsing, increments the material counter.
+*/
 void	get_material_attributes(t_env *e, FILE *stream)
 {
 	t_split_string	attr;

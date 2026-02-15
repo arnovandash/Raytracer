@@ -1,17 +1,33 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   light_values.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adippena <angusdippenaar@gmail.com>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/07/09 12:30:08 by adippena          #+#    #+#             */
-/*   Updated: 2016/09/04 15:05:38 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** light_values.c -- Parse LIGHT block from scene file.
+**
+** Each LIGHT block defines a point light source with the following attributes:
+**
+**   LOC       - Position of the light in world space.
+**   COLOUR    - Light color as a hex "RRGGBB" string (e.g., "FFFFFF" = white).
+**   INTENSITY - Brightness value, converted to lumens internally by
+**               multiplying by 3.415 (derived from 683 lm/W * 0.005).
+**               This constant maps the scene file's abstract intensity units
+**               to a physically-inspired luminous flux value used in shading.
+**   HALF      - Falloff half-distance. Controls how quickly the light
+**               attenuates with distance. A value of 0 means no falloff
+**               (light reaches everywhere equally).
+**
+** The raytracer supports multiple lights. During rendering, each light
+** contributes independently to the diffuse and specular shading of a
+** surface point, and each casts its own shadow rays.
+*/
 
 #include "rt.h"
 
+/*
+** set_light_values -- Assign a parsed key-value pair to the current light.
+**
+** The intensity conversion (value * 3.415) maps from the scene file's
+** user-friendly units to internal luminous flux. The constant 3.415 comes
+** from 683 lumens/watt (luminous efficacy at 555nm) * 0.005 (scaling factor),
+** giving a perceptually reasonable brightness range for scene values of 1-100.
+*/
 static void	set_light_values(t_env *e, char *pt1, char *pt2)
 {
 	t_split_string	values;
@@ -28,6 +44,12 @@ static void	set_light_values(t_env *e, char *pt1, char *pt2)
 	free_split(&values);
 }
 
+/*
+** init_light -- Set sensible defaults for a new light.
+**
+** Defaults to a white point light at position (0, 0, 5) with intensity 1.0
+** (3.415 lumens) and no distance falloff (half = 0).
+*/
 static void	init_light(t_light *l)
 {
 	l->loc = (t_vector){0.0, 0.0, 5.0};
@@ -36,6 +58,14 @@ static void	init_light(t_light *l)
 	l->half = 0.0;
 }
 
+/*
+** get_light_attributes -- Read all lines of a LIGHT block.
+**
+** Allocates a new t_light, initializes it with defaults, then reads
+** tab-delimited attribute lines until a blank line terminates the block.
+** After parsing, increments the global light counter so the next LIGHT
+** block writes to the next array slot.
+*/
 void		get_light_attributes(t_env *e, FILE *stream)
 {
 	t_split_string	attr;

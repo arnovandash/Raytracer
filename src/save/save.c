@@ -1,17 +1,31 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   save.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rojones <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/08/15 11:59:15 by rojones           #+#    #+#             */
-/*   Updated: 2016/09/03 16:50:56 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** save.c -- Scene serialization orchestrator
+**
+** Writes the entire scene state back to the original scene file in the same
+** tab-indented declarative format that the parser reads. This allows the user
+** to interactively modify a scene (move objects, adjust camera) and then
+** persist those changes.
+**
+** The file is opened with O_TRUNC to clear existing contents before writing.
+** Write order matches the parser's expected format:
+**   1. Header comment (# SCENE RT)
+**   2. Global settings: MAXDEPTH, RENDER, SUPER
+**   3. CAMERA block
+**   4. LIGHT blocks
+**   5. MATERIAL blocks
+**   6. PRIMITIVE blocks
+**   7. OBJECT blocks (OBJ mesh references)
+**
+** All output uses dprintf() to write directly to the file descriptor,
+** avoiding the need for intermediate string buffers.
+*/
 
 #include "rt.h"
 
+/*
+** Serializes the camera block: position (LOC), look-at target (DIR),
+** up vector (UP), and aperture size for depth-of-field effects.
+*/
 static void	save_camra(t_camera *cam, int fd)
 {
 	dprintf(fd, "\tCAMERA\n");
@@ -24,12 +38,21 @@ static void	save_camra(t_camera *cam, int fd)
 	dprintf(fd, "\t\tAPERTURE\t%lf\n", cam->a);
 }
 
+/*
+** Writes render resolution (width height) and supersampling level.
+** SUPER controls depth-of-field sample count for anti-aliasing.
+*/
 static void	save_render(t_env *e, int fd)
 {
 	dprintf(fd, "\tRENDER\t\t%zu %zu\n", e->x, e->y);
 	dprintf(fd, "\tSUPER\t\t%zu\n", e->super);
 }
 
+/*
+** Main save entry point. Opens the original scene file (truncating it),
+** writes all scene data in order, and closes the file.
+** Delegates to specialized functions for each block type.
+*/
 void		save(t_env *e)
 {
 	int		fd;

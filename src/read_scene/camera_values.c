@@ -1,17 +1,33 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   camera_values.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adippena <angusdippenaar@gmail.com>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/07/09 12:24:39 by adippena          #+#    #+#             */
-/*   Updated: 2016/09/03 15:28:41 by adippena         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** camera_values.c -- Parse CAMERA block from scene file.
+**
+** The camera defines the viewpoint for the raytracer. It uses a "look-at"
+** model specified by three vectors and an optional aperture:
+**
+**   LOC      - Camera position in world space (eye point).
+**   DIR      - The point the camera is looking at (NOT a direction vector).
+**              The actual view direction is computed later as (DIR - LOC).
+**   UP       - The "up" reference vector, used to construct the camera's
+**              orthonormal basis (u, v, n) during camera_setup.
+**   APERTURE - Controls depth-of-field blur. A value of 0 gives a perfect
+**              pinhole camera (everything in focus). Larger values simulate
+**              a wider lens aperture, blurring objects outside the focal plane.
+**
+** The camera basis vectors (u, v, n) and image-plane stepping are computed
+** later by camera_setup.c, not here. This file only reads the raw values
+** from the scene file.
+*/
 
 #include "rt.h"
 
+/*
+** set_camera_values -- Assign a parsed key-value pair to the camera struct.
+**
+** Parameters:
+**   e   - Environment struct containing the camera.
+**   pt1 - The attribute key (e.g., "LOC", "DIR", "UP", "APERTURE").
+**   pt2 - The attribute value string (e.g., "0 5 -10" or "0.5").
+*/
 static void	set_camera_values(t_env *e, char *pt1, char *pt2)
 {
 	t_split_string	values;
@@ -28,6 +44,17 @@ static void	set_camera_values(t_env *e, char *pt1, char *pt2)
 	free_split(&values);
 }
 
+/*
+** get_camera_attributes -- Read all lines of a CAMERA block.
+**
+** Reads tab-delimited "KEY\tVALUE" lines from the scene file stream until
+** a blank line (block terminator) or EOF is encountered. Each line is split
+** on tabs and dispatched to set_camera_values.
+**
+** Parameters:
+**   e      - Environment struct to populate.
+**   stream - File stream positioned just after the "CAMERA" header line.
+*/
 void		get_camera_attributes(t_env *e, FILE *stream)
 {
 	t_split_string	attr;

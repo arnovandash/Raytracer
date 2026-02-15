@@ -111,3 +111,5 @@ OBJECT
 ## Credits
 
 This project was a collaborative effort. The majority of the original code was written by **adippena**. **rojones** also contributed significantly to the codebase and assisted me with the majority of my contributions.
+
+Performance optimisations and codebase commenting were done with the assistance of [Claude](https://claude.ai) by Anthropic.
